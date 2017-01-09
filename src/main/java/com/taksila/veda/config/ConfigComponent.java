@@ -1,7 +1,9 @@
 package com.taksila.veda.config;
 
+import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -124,6 +126,18 @@ public class ConfigComponent
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public static String getUserTempFilePath(String type, String additionalFolderId) 
+	{
+		String basePath = ConfigComponent.getConfig(ConfigId.TEMP_FILE_PATH);
+		basePath = StringUtils.removeEnd(basePath, "\\");
+		String dirPath = ConfigComponent.getConfig(ConfigId.TEMP_FILE_PATH)+"\\"+type+"\\";
+		if (StringUtils.isNotBlank(additionalFolderId))
+			dirPath = dirPath + additionalFolderId+"\\";
+		boolean dirExits = new File(dirPath).mkdirs();
+		return dirPath;  
+			
 	}
 	
 }

@@ -14,9 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.taksila.veda.db.SQLDataBaseManager;
 import com.taksila.veda.db.dao.ClassroomDAO.CLASSROOM_TABLE;
-import com.taksila.veda.db.dao.ConfigDAO.CONFIG_GROUP_TABLE;
-import com.taksila.veda.db.dao.ConfigDAO.CONFIG_SECTION_TABLE;
-import com.taksila.veda.db.dao.ConfigDAO.CONFIG_TABLE;
 import com.taksila.veda.db.dao.UsersDAO.USER_TABLE;
 import com.taksila.veda.model.api.classroom.v1_0.Enrollment;
 import com.taksila.veda.model.db.classroom.v1_0.EnrollmentStatusType;

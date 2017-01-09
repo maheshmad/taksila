@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
-import com.taksila.veda.model.api.course.v1_0.Topic;
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.course.v1_0.CreateTopicRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateTopicResponse;
 import com.taksila.veda.model.api.course.v1_0.DeleteTopicRequest;
@@ -32,6 +32,7 @@ import com.taksila.veda.model.api.course.v1_0.GetTopicRequest;
 import com.taksila.veda.model.api.course.v1_0.GetTopicResponse;
 import com.taksila.veda.model.api.course.v1_0.SearchTopicsRequest;
 import com.taksila.veda.model.api.course.v1_0.SearchTopicsResponse;
+import com.taksila.veda.model.api.course.v1_0.Topic;
 import com.taksila.veda.model.api.course.v1_0.UpdateTopicRequest;
 import com.taksila.veda.model.api.course.v1_0.UpdateTopicResponse;
 import com.taksila.veda.utils.CommonUtils;
@@ -79,7 +80,7 @@ public class TopicService
 			CreateTopicRequest req = new CreateTopicRequest();
 			req.setTopic(topic);
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			TopicComponent topicComp = new TopicComponent(schoolId);
 			operResp = topicComp.createNewTopic(req); 			
 			operResp.setSuccess(true);
@@ -115,9 +116,9 @@ public class TopicService
 		try 
 		{
 			GetTopicRequest req = new GetTopicRequest();
-			req.setId(Integer.valueOf(topicid));;
+			req.setId(topicid);;
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			TopicComponent topicComp = new TopicComponent(schoolId);
 			operResp = topicComp.getTopic(req); 			
 			operResp.setSuccess(true);
@@ -174,7 +175,7 @@ public class TopicService
 			UpdateTopicRequest req = new UpdateTopicRequest();
 			req.setTopic(topic);
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			TopicComponent topicComp = new TopicComponent(schoolId);
 			operResp = topicComp.updateTopic(req);
 			operResp.setSuccess(true);
@@ -210,10 +211,10 @@ public class TopicService
 		{
 			logger.trace("About to delete topic record = "+topicid);						
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			TopicComponent topicComp = new TopicComponent(schoolId);
 			DeleteTopicRequest req = new DeleteTopicRequest();
-			req.setId(Integer.valueOf(topicid));
+			req.setId(topicid);
 			operResp = topicComp.deleteTopic(req);
 			operResp.setSuccess(true);
 		}
@@ -256,7 +257,7 @@ public class TopicService
 			req.setQuery(name);
 			req.setRecordType("TOPIC");
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			TopicComponent topicComp = new TopicComponent(schoolId);
 			searchResp = topicComp.searchTopic(req);
 		

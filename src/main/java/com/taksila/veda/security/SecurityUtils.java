@@ -2,6 +2,7 @@ package com.taksila.veda.security;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.utils.CommonUtils;
 
@@ -24,7 +25,7 @@ public class SecurityUtils
 	
 	public static User getLoggedInPrincipal(String tenantId, HttpServletRequest request)
 	{
-		String usersessionid = CommonUtils.getCookie(UserAuthService.USER_AUTH_SESSION_COOKIE_NAME, request);
+		String usersessionid = ServletUtils.getCookie(UserAuthService.USER_AUTH_SESSION_COOKIE_NAME, request);
 		return getLoggedInPrincipal(tenantId, usersessionid);
 			
 	}

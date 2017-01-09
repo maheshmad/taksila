@@ -146,7 +146,7 @@ public class TopicDAO
 	 * @throws SQLException
 	 * @throws NamingException 
 	 */
-	public List<Topic> searchTopicsByChapterid(int chapterid) throws SQLException, NamingException
+	public List<Topic> searchTopicsByChapterid(String chapterid) throws SQLException, NamingException
 	{
 		List<Topic> topicHits = new ArrayList<Topic>();				
 		PreparedStatement stmt = null;		
@@ -156,7 +156,7 @@ public class TopicDAO
 		{
 			this.sqlDBManager.connect();						
 			stmt = this.sqlDBManager.getPreparedStatement(search_topic_by_chapter_id_sql);
-			stmt.setInt(1, chapterid);
+			stmt.setInt(1, Integer.parseInt(chapterid));
 			
 			ResultSet resultSet = stmt.executeQuery();	
 			while (resultSet.next()) 
@@ -186,7 +186,7 @@ public class TopicDAO
 	 * @throws SQLException
 	 * @throws NamingException 
 	 */
-	public Topic getTopicById(int id) throws SQLException, NamingException
+	public Topic getTopicById(String id) throws SQLException, NamingException
 	{						
 		PreparedStatement stmt = null;	
 		Topic topic = null;
@@ -194,7 +194,7 @@ public class TopicDAO
 		{
 			this.sqlDBManager.connect();
 			stmt = this.sqlDBManager.getPreparedStatement(search_topic_by_id_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			ResultSet resultSet = stmt.executeQuery();	
 			if (resultSet.next()) 
 			{
@@ -306,7 +306,7 @@ public class TopicDAO
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteTopic(int id) throws Exception 
+	public boolean deleteTopic(String id) throws Exception 
 	{
 		logger.debug("Entering into deleteTopic():::::");
 		this.sqlDBManager.connect();	
@@ -314,7 +314,7 @@ public class TopicDAO
 		try
 		{
 			stmt = this.sqlDBManager.getPreparedStatement(delete_topic_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			int t = stmt.executeUpdate();
 			if (t > 0)
 				return true;

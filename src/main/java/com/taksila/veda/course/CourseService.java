@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.course.v1_0.Course;
 import com.taksila.veda.model.api.course.v1_0.CreateNewCourseRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateNewCourseResponse;
@@ -77,7 +78,7 @@ public class CourseService
 			CreateNewCourseRequest req = new CreateNewCourseRequest();
 			req.setNewCourse(course);
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			CourseComponent courseComp = new CourseComponent(schoolId);
 			operResp = courseComp.createNewCourse(req); 			
 			operResp.setSuccess(true);
@@ -113,9 +114,9 @@ public class CourseService
 		try 
 		{
 			GetCourseInfoRequest req = new GetCourseInfoRequest();
-			req.setId(Integer.valueOf(courseid.trim()));;
+			req.setId(courseid.trim());;
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			CourseComponent courseComp = new CourseComponent(schoolId);
 			operResp = courseComp.getCourse(req); 			
 			operResp.setSuccess(true);
@@ -172,7 +173,7 @@ public class CourseService
 			UpdateCourseRequest req = new UpdateCourseRequest();
 			req.setCourse(course);
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			CourseComponent courseComp = new CourseComponent(schoolId);
 			operResp = courseComp.updateCourse(req);
 			operResp.setSuccess(true);
@@ -208,10 +209,10 @@ public class CourseService
 		{
 			logger.trace("About to delete course record = "+courseid);						
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			CourseComponent courseComp = new CourseComponent(schoolId);
 			DeleteCourseRequest req = new DeleteCourseRequest();
-			req.setId(Integer.valueOf(courseid));
+			req.setId(courseid);
 			operResp = courseComp.deleteCourse(req);
 			operResp.setSuccess(true);
 		}
@@ -254,7 +255,7 @@ public class CourseService
 			req.setQuery(name);
 			req.setRecordType("COURSE");
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			CourseComponent courseComp = new CourseComponent(schoolId);
 			searchResp = courseComp.searchCourses(req);
 		

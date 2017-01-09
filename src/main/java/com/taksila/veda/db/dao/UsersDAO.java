@@ -445,7 +445,7 @@ public class UsersDAO
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteUser(int id) throws Exception 
+	public boolean deleteUser(String id) throws Exception 
 	{
 		logger.debug("Entering into deleteUser():::::");
 		this.sqlDBManager.connect();	
@@ -453,7 +453,7 @@ public class UsersDAO
 		try
 		{
 			stmt = this.sqlDBManager.getPreparedStatement(delete_user_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			int t = stmt.executeUpdate();
 			if (t > 0)
 				return true;

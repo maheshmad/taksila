@@ -1,11 +1,8 @@
 package com.taksila.veda.usermgmt;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -17,14 +14,13 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sun.javafx.event.EventHandlerManager;
 import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.db.dao.UserImagesDAO;
 import com.taksila.veda.db.dao.UsersDAO;
+import com.taksila.veda.email.EmailUtils;
 import com.taksila.veda.eventschedulemgmt.EventScheduleMgmtComponent;
 import com.taksila.veda.model.api.base.v1_0.AllowedActionsRequest;
 import com.taksila.veda.model.api.base.v1_0.AllowedActionsResponse;
-import com.taksila.veda.model.api.base.v1_0.RecordType;
 import com.taksila.veda.model.api.base.v1_0.SearchHitRecord;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.usermgmt.v1_0.CreateNewUserRequest;
@@ -43,7 +39,6 @@ import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageInfo;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageType;
 import com.taksila.veda.utils.CommonUtils;
-import com.taksila.veda.utils.EmailUtils;
 
 
 public class UserComponent 
@@ -301,7 +296,7 @@ public class UserComponent
 	 * @param formParams
 	 * @return
 	 */
-	public UpdateUserResponse updateUser(int id,MultivaluedMap<String, String> formParams)
+	public UpdateUserResponse updateUser(String id,MultivaluedMap<String, String> formParams)
 	{						
 		UpdateUserResponse operResp = new UpdateUserResponse();
 		try	

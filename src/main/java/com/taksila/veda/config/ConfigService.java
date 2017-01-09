@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.config.v1_0.GetConfigurationRequest;
 import com.taksila.veda.model.api.config.v1_0.GetConfigurationResponse;
@@ -75,7 +76,7 @@ public class ConfigService
 				try 
 				{					
 					logger.trace("Inside /api/config POST" );
-					String tenantId = CommonUtils.getSubDomain(uri);
+					String tenantId = ServletUtils.getSubDomain(uri);
 					ConfigComponent configComp = new ConfigComponent(tenantId);					
 					List<Config> configs = new ArrayList<Config>();
 					/*
@@ -146,7 +147,7 @@ public class ConfigService
 		{
 			public void run() 
 			{			
-				String tenantId = CommonUtils.getSubDomain(uri);
+				String tenantId = ServletUtils.getSubDomain(uri);
 				ConfigComponent configComp = new ConfigComponent(tenantId);
 				GetConfigurationResponse configResp = null;
 				try 
@@ -188,7 +189,7 @@ public class ConfigService
 			public void run() 
 			{			
 				Map<String,String> configVals = new HashMap<String,String>();
-				String tenantId = CommonUtils.getSubDomain(uri);
+				String tenantId = ServletUtils.getSubDomain(uri);
 				ConfigComponent configComp = new ConfigComponent(tenantId);
 				GetConfigurationResponse configResp = null;
 				String keyvaljson = "{";
@@ -266,7 +267,7 @@ public class ConfigService
 //			UpdateCourseRequest req = new UpdateCourseRequest();
 //			req.setCourse(course);
 //			
-//			String schoolId = CommonUtils.getSubDomain(uri);
+//			String schoolId = ServletUtils.getSubDomain(uri);
 //			CourseComponent courseComp = new CourseComponent(schoolId);
 //			operResp = courseComp.updateCourse(req);
 //			operResp.setSuccess(true);
@@ -302,7 +303,7 @@ public class ConfigService
 //		{
 //			logger.trace("About to delete course record = "+courseid);						
 //			
-//			String schoolId = CommonUtils.getSubDomain(uri);
+//			String schoolId = ServletUtils.getSubDomain(uri);
 //			CourseComponent courseComp = new CourseComponent(schoolId);
 //			DeleteCourseRequest req = new DeleteCourseRequest();
 //			req.setId(Integer.valueOf(courseid));
@@ -348,7 +349,7 @@ public class ConfigService
 //			req.setQuery(name);
 //			req.setRecordType("COURSE");
 //			
-//			String schoolId = CommonUtils.getSubDomain(uri);
+//			String schoolId = ServletUtils.getSubDomain(uri);
 //			CourseComponent courseComp = new CourseComponent(schoolId);
 //			searchResp = courseComp.searchCourses(req);
 //		

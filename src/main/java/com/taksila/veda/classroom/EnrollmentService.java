@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -19,13 +18,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.classroom.v1_0.CreateEnrollmentRequest;
 import com.taksila.veda.model.api.classroom.v1_0.CreateEnrollmentResponse;
 import com.taksila.veda.model.api.classroom.v1_0.DeleteEnrollmentRequest;
@@ -37,7 +36,6 @@ import com.taksila.veda.model.api.classroom.v1_0.SearchEnrollmentRequest;
 import com.taksila.veda.model.api.classroom.v1_0.SearchEnrollmentResponse;
 import com.taksila.veda.model.api.classroom.v1_0.UpdateEnrollmentRequest;
 import com.taksila.veda.model.api.classroom.v1_0.UpdateEnrollmentResponse;
-import com.taksila.veda.model.db.classroom.v1_0.EnrollmentStatusType;
 import com.taksila.veda.security.SecurityUtils;
 import com.taksila.veda.utils.CommonUtils;
 
@@ -58,7 +56,7 @@ public class EnrollmentService
     		@Context UriInfo uri,	
     		@Suspended final AsyncResponse asyncResp) 
     {    	
-		String tenantId = CommonUtils.getSubDomain(uri);
+		String tenantId = ServletUtils.getSubDomain(uri);
 		EnrollmentComponent enrollmentComp = new EnrollmentComponent(tenantId);
 		CreateEnrollmentResponse operResp = new CreateEnrollmentResponse();
 		
@@ -110,7 +108,7 @@ public class EnrollmentService
 			GetEnrollmentRequest req = new GetEnrollmentRequest();
 			req.setId(enrollmentid);;
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
 			operResp = enrollmentComp.getEnrollment(req); 			
 			operResp.setSuccess(true);
@@ -149,7 +147,7 @@ public class EnrollmentService
     		final MultivaluedMap<String, String> formParams,    		
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
-		String schoolId = CommonUtils.getSubDomain(uri);
+		String schoolId = ServletUtils.getSubDomain(uri);
 		EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
 		UpdateEnrollmentResponse operResp = new UpdateEnrollmentResponse();		
 		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(schoolId, request);
@@ -199,7 +197,7 @@ public class EnrollmentService
 		{
 			logger.trace("About to delete enrollment record = "+enrollmentid);						
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
 			DeleteEnrollmentRequest req = new DeleteEnrollmentRequest();
 			req.setId(enrollmentid);
@@ -242,7 +240,7 @@ public class EnrollmentService
 		
 		SearchEnrollmentResponse searchResp = new SearchEnrollmentResponse();		
 		SearchEnrollmentRequest req = new SearchEnrollmentRequest();
-		String schoolId = CommonUtils.getSubDomain(uri);
+		String schoolId = ServletUtils.getSubDomain(uri);
 		EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
 		
 		try 

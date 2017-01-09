@@ -24,9 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
-import com.taksila.veda.model.api.base.v1_0.AllowedActionsRequest;
-import com.taksila.veda.model.api.base.v1_0.AllowedActionsResponse;
-import com.taksila.veda.model.api.base.v1_0.UserAllowedAction;
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleResponse;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.DeleteEventScheduleRequest;
@@ -57,7 +55,7 @@ public class EventScheduleMgmtService
     		@Context UriInfo uri,	
     		@Suspended final AsyncResponse asyncResp) 
     {    	
-		String tenantId = CommonUtils.getSubDomain(uri);
+		String tenantId = ServletUtils.getSubDomain(uri);
 		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(tenantId);
 		CreateEventScheduleResponse operResp = new CreateEventScheduleResponse();
 		
@@ -109,7 +107,7 @@ public class EventScheduleMgmtService
 			GetEventScheduleRequest req = new GetEventScheduleRequest();
 			req.setId(eventScheduleid);;
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
 			operResp = eventScheduleComp.getEventSchedule(req); 			
 			operResp.setSuccess(true);
@@ -144,7 +142,7 @@ public class EventScheduleMgmtService
     		final MultivaluedMap<String, String> formParams,    		
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
-		String schoolId = CommonUtils.getSubDomain(uri);
+		String schoolId = ServletUtils.getSubDomain(uri);
 		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
 		UpdateEventScheduleResponse operResp = new UpdateEventScheduleResponse();		
 		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(schoolId, request);
@@ -189,7 +187,7 @@ public class EventScheduleMgmtService
 		{
 			logger.trace("About to delete eventSchedule record = "+eventScheduleid);						
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
 			DeleteEventScheduleRequest req = new DeleteEventScheduleRequest();
 			req.setId(eventScheduleid);
@@ -233,7 +231,7 @@ public class EventScheduleMgmtService
 		
 		SearchEventScheduleResponse searchResp = new SearchEventScheduleResponse();		
 		SearchEventScheduleRequest req = new SearchEventScheduleRequest();
-		String schoolId = CommonUtils.getSubDomain(uri);
+		String schoolId = ServletUtils.getSubDomain(uri);
 		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
 		
 		try 

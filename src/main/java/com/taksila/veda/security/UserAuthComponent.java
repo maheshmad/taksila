@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.db.dao.UserSessionDAO;
 import com.taksila.veda.db.dao.UsersDAO;
-import com.taksila.veda.model.api.base.v1_0.BaseResponse;
+import com.taksila.veda.email.EmailUtils;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.security.v1_0.ResetPasswordResponse;
 import com.taksila.veda.model.api.security.v1_0.UserLoginResponse;
@@ -16,8 +16,6 @@ import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.model.db.security.v1_0.UserSession;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.utils.CommonUtils;
-import com.taksila.veda.utils.EmailUtils;
-import com.taksila.veda.utils.ValidationUtils;
 
 
 public class UserAuthComponent 

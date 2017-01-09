@@ -1,11 +1,7 @@
 package com.taksila.veda.classroom;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import javax.naming.NamingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +26,6 @@ import com.taksila.veda.model.api.classroom.v1_0.SearchEnrollmentRequest;
 import com.taksila.veda.model.api.classroom.v1_0.SearchEnrollmentResponse;
 import com.taksila.veda.model.api.classroom.v1_0.UpdateEnrollmentRequest;
 import com.taksila.veda.model.api.classroom.v1_0.UpdateEnrollmentResponse;
-import com.taksila.veda.model.db.base.v1_0.UserRole;
 import com.taksila.veda.model.db.classroom.v1_0.EnrollmentStatusType;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.utils.CommonUtils;

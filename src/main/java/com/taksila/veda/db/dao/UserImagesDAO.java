@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.taksila.veda.db.SQLDataBaseManager;
-import com.taksila.veda.db.dao.SlidesDAO.SLIDE_TABLE;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageInfo;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageType;
 import com.taksila.veda.utils.CommonUtils;

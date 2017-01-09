@@ -28,24 +28,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
-import com.taksila.veda.db.dao.UsersDAO.USER_TABLE;
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.eventschedulemgmt.EventScheduleMgmtComponent;
 import com.taksila.veda.model.api.base.v1_0.AllowedActionsRequest;
 import com.taksila.veda.model.api.base.v1_0.AllowedActionsResponse;
 import com.taksila.veda.model.api.base.v1_0.RecordType;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
-import com.taksila.veda.model.api.usermgmt.v1_0.CreateNewUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.CreateNewUserResponse;
 import com.taksila.veda.model.api.usermgmt.v1_0.DeleteUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.DeleteUserResponse;
-import com.taksila.veda.model.api.usermgmt.v1_0.GetUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.GetUserResponse;
 import com.taksila.veda.model.api.usermgmt.v1_0.SearchUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.SearchUserResponse;
-import com.taksila.veda.model.api.usermgmt.v1_0.UpdateUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.UpdateUserResponse;
-import com.taksila.veda.model.db.base.v1_0.UserRole;
-import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.utils.CommonUtils;
 
 
@@ -87,7 +82,7 @@ public class UserService
 		{
 			public void run() 
 			{	
-				String schoolId = CommonUtils.getSubDomain(uri);				
+				String schoolId = ServletUtils.getSubDomain(uri);				
 				CreateNewUserResponse operResp = new CreateNewUserResponse();
 				try 
 				{					
@@ -138,7 +133,7 @@ public class UserService
 				GetUserResponse operResp = new GetUserResponse();
 				try 
 				{
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					UserComponent userComp = new UserComponent(schoolId);
 					operResp = userComp.getUser(id); 			
 					operResp.setSuccess(true);
@@ -186,7 +181,7 @@ public class UserService
 				ByteArrayOutputStream operResp = null;
 				try 
 				{										
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					UserComponent userComp = new UserComponent(schoolId);
 					if (StringUtils.equals(scale, "thumb"))
 						operResp = userComp.getImage(imageid, 0.5);
@@ -233,7 +228,7 @@ public class UserService
 	@ManagedAsync
 	@Path("/{id}")
 	public void updateUser(@Context HttpServletRequest request, @Context final UriInfo uri,				
-			@PathParam("id") final int id, 
+			@PathParam("id") final String id, 
 			final MultivaluedMap<String, String> formParams,
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
@@ -243,7 +238,7 @@ public class UserService
 			public void run() 
 			{	
 				UpdateUserResponse operResp = new UpdateUserResponse();
-				String schoolId = CommonUtils.getSubDomain(uri);
+				String schoolId = ServletUtils.getSubDomain(uri);
 				UserComponent userComp = new UserComponent(schoolId);
 				
 				try 
@@ -292,10 +287,10 @@ public class UserService
 				{
 					logger.trace("About to delete user record = "+userid);						
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					UserComponent userComp = new UserComponent(schoolId);
 					DeleteUserRequest req = new DeleteUserRequest();
-					req.setId(Integer.valueOf(userid));
+					req.setId(userid);
 					operResp = userComp.deleteUser(req);
 					operResp.setSuccess(true);
 				}
@@ -349,7 +344,7 @@ public class UserService
 					req.setQuery(name == null ? "": name);
 					req.setRecordType("USERS");
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					UserComponent userComp = new UserComponent(schoolId);
 					searchResp = userComp.searchUsers(req);
 					searchResp.setStatus(StatusType.SUCCESS);;
@@ -384,7 +379,7 @@ public class UserService
 			@Suspended final AsyncResponse asyncResp)
 	{    						
 		logger.trace("inside user allowed actions service");		
-		String schoolId = CommonUtils.getSubDomain(uri);
+		String schoolId = ServletUtils.getSubDomain(uri);
 		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
 		AllowedActionsResponse allowedActionsResp = new AllowedActionsResponse();
 		

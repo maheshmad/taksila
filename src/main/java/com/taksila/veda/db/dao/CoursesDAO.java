@@ -147,7 +147,7 @@ public class CoursesDAO
 	 * @throws SQLException
 	 * @throws NamingException 
 	 */
-	public Course getCoursesById(int id) throws SQLException, NamingException
+	public Course getCoursesById(String id) throws SQLException, NamingException
 	{						
 		PreparedStatement stmt = null;	
 		Course course = null;
@@ -155,7 +155,7 @@ public class CoursesDAO
 		{
 			this.sqlDBManager.connect();
 			stmt = this.sqlDBManager.getPreparedStatement(search_course_by_id_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			ResultSet resultSet = stmt.executeQuery();	
 			if (resultSet.next()) 
 			{
@@ -265,7 +265,7 @@ public class CoursesDAO
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteCourse(int id) throws Exception 
+	public boolean deleteCourse(String id) throws Exception 
 	{
 		logger.debug("Entering into deleteCourse():::::");
 		this.sqlDBManager.connect();	
@@ -273,7 +273,7 @@ public class CoursesDAO
 		try
 		{
 			stmt = this.sqlDBManager.getPreparedStatement(delete_course_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			int t = stmt.executeUpdate();
 			if (t > 0)
 				return true;

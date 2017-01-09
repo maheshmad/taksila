@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.security.v1_0.ResetPasswordResponse;
@@ -55,7 +56,7 @@ public class UserAuthService
 		{
 			logger.trace("About to authenticate ");
 			HttpSession session = request.getSession(true);		
-			String tenantId = CommonUtils.getSubDomain(uri.getBaseUri());				
+			String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());				
 			/*
 			 * get user info
 			 */			
@@ -108,7 +109,7 @@ public class UserAuthService
 		try 
 		{
 			logger.trace("About to authenticate ");			
-			String tenantId = CommonUtils.getSubDomain(uri.getBaseUri());				
+			String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());				
 			chgPswdResp.setSuccess(true);
 			/*
 			 * get user info
@@ -149,7 +150,7 @@ public class UserAuthService
 		try 
 		{
 			logger.trace("About to reset the password for user = "+emailid);			
-			String tenantId = CommonUtils.getSubDomain(uri.getBaseUri());				
+			String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());				
 			resetPswdResp.setSuccess(true);
 			/*
 			 * get user info
@@ -185,7 +186,7 @@ public class UserAuthService
 			asyncResp.resume(Response.status(403).type("text/plain").entity("No auth cookie found! Please make sure the cookie feature is enabled").build());
 		
 		String authSessionId = authCookie.getValue();				
-		String tenantId = CommonUtils.getSubDomain(uri.getBaseUri());				
+		String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());				
 		/*
 		 * get user info
 		 */
@@ -216,7 +217,7 @@ public class UserAuthService
 			@Context HttpServletResponse resp,@CookieParam(USER_AUTH_SESSION_COOKIE_NAME) Cookie authCookie,@Suspended final AsyncResponse asyncResp)
 	{    						
 		logger.trace("Inside getUserImage service!!!!!");
-		String tenantId = CommonUtils.getSubDomain(uri.getBaseUri());		
+		String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());		
 		byte[] userphoto = CommonUtils.readImageFile("defaultprofileimage-128.png");
 			
 		return Response.ok(userphoto).build();
@@ -239,7 +240,7 @@ public class UserAuthService
     		if (authCookie != null)
     		{	    		
 	    		String authSessionId = authCookie.getValue();				
-	    		String tenantId = CommonUtils.getSubDomain(uri.getBaseUri());				
+	    		String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());				
 	    		/*
 	    		 * get user info
 	    		 */
@@ -280,7 +281,7 @@ public class UserAuthService
 		UserSession userSession = new UserSession();
 		userSession.setId(sessionId);
 		userSession.setClient(request.getHeader("User-Agent"));
-		userSession.setIpAddr(CommonUtils.getClientIpAddr(request));
+		userSession.setIpAddr(ServletUtils.getClientIpAddr(request));
 		userSession.setUserId(userId);
 		userSession.setExpiresOn(CommonUtils.getXMLGregorianCalendarNow());
 		

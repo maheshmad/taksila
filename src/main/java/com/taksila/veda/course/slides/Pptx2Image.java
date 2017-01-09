@@ -9,58 +9,27 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-/*
- *  ====================================================================
- *    Licensed to the Apache Software Foundation (ASF) under one or more
- *    contributor license agreements.  See the NOTICE file distributed with
- *    this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0
- *    (the "License"); you may not use this file except in compliance with
- *    the License.  You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- * ====================================================================
- */
-
-import org.apache.batik.dom.svg.SVGDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.transcoder.wmf.tosvg.WMFPainter;
 import org.apache.batik.transcoder.wmf.tosvg.WMFRecordStore;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.FileUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFComments;
 import org.apache.poi.xslf.usermodel.XSLFImageRenderer;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
-import org.apache.poi.xslf.usermodel.XSLFRenderingHint;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 
+import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideResponse;
 import com.taksila.veda.model.api.course.v1_0.GetSlideRequest;
@@ -186,7 +155,7 @@ public class Pptx2Image
          // read the .pptx file
 //         File f = new File(filename);
 //         InputStream st = new FileInputStream(f);
-         String filePath = CommonUtils.getUserTempFilePath("slides",options.topicid)+"\\"+options.filename;
+         String filePath = ConfigComponent.getUserTempFilePath("slides",options.topicid)+"\\"+options.filename;
          File f = new File(filePath);
          if (!f.exists())
         	 throw new Exception("File "+options.filename+"not found ..");   

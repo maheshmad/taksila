@@ -194,7 +194,7 @@ public class SlidesDAO
 	 * @return
 	 * @throws Exception 
 	 */
-	public Slide getSlideById(int id) throws Exception
+	public Slide getSlideById(String id) throws Exception
 	{						
 		PreparedStatement stmt = null;	
 		Slide slide = null;
@@ -202,7 +202,7 @@ public class SlidesDAO
 		{
 			this.sqlDBManager.connect();
 			stmt = this.sqlDBManager.getPreparedStatement(search_slide_by_id_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			ResultSet resultSet = stmt.executeQuery();	
 			if (resultSet.next()) 
 			{
@@ -486,7 +486,7 @@ public class SlidesDAO
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteSlide(int id) throws Exception 
+	public boolean deleteSlide(String id) throws Exception 
 	{
 		logger.debug("Entering into deleteSlide():::::");
 		this.sqlDBManager.connect();	
@@ -494,7 +494,7 @@ public class SlidesDAO
 		try
 		{
 			stmt = this.sqlDBManager.getPreparedStatement(delete_slide_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			int t = stmt.executeUpdate();
 			if (t > 0)
 				return true;

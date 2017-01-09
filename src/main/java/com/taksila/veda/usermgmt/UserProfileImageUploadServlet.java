@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.usermgmt.v1_0.UploadUserImageResponse;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageInfo;
@@ -55,7 +56,7 @@ public class UserProfileImageUploadServlet extends HttpServlet
         System.out.println("inside profile image upload servlet");
         response.setContentType("application/json");
         // Create path components to save the file              
-    	 final String tenantId = CommonUtils.getSubDomain(request.getRequestURL().toString());
+    	 final String tenantId = ServletUtils.getSubDomain(request.getRequestURL().toString());
         UserComponent userComp = new UserComponent(tenantId);
                           
         UploadUserImageResponse fileUploadResp = new UploadUserImageResponse();

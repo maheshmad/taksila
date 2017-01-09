@@ -22,6 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.taksila.servlet.utils.ServletUtils;
+import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.course.TopicComponent;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.course.v1_0.GetTopicRequest;
@@ -58,16 +60,16 @@ public class SlidesPPTXUploadServlet extends HttpServlet
         OutputStream out = null;
         InputStream filecontent = null;
         final PrintWriter writer = response.getWriter();
-        final String tenantId = CommonUtils.getSubDomain(request.getRequestURL().toString());
+        final String tenantId = ServletUtils.getSubDomain(request.getRequestURL().toString());
     	TopicComponent topicComp = new TopicComponent(tenantId);
 
         try 
         {
         	final String topicid = request.getParameter("topicid");
         	final Part filePart = request.getPart("slidecontent");
-            final String fileName = System.currentTimeMillis()+CommonUtils.getFileName(filePart);           
+            final String fileName = System.currentTimeMillis()+ServletUtils.getFileName(filePart);           
         	String fileExtension = FilenameUtils.getExtension(fileName);
-        	final String path = CommonUtils.getUserTempFilePath("slides",topicid);
+        	final String path = ConfigComponent.getUserTempFilePath("slides",topicid);
         	/*
         	 * validation 
         	 */
@@ -99,7 +101,7 @@ public class SlidesPPTXUploadServlet extends HttpServlet
             if (StringUtils.isNotBlank(topicid))
             {            	
             	GetTopicRequest getTopicReq = new GetTopicRequest();
-            	getTopicReq.setId(Integer.parseInt(topicid));
+            	getTopicReq.setId(topicid);
 				GetTopicResponse topicResp = topicComp.getTopic(getTopicReq);
             	if (topicResp == null || topicResp.getTopic() == null)
             	{

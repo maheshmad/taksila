@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.classroom.v1_0.Classroom;
 import com.taksila.veda.model.api.classroom.v1_0.CreateClassroomRequest;
 import com.taksila.veda.model.api.classroom.v1_0.CreateClassroomResponse;
@@ -80,7 +81,7 @@ public class ClassroomService
 			CreateClassroomRequest req = new CreateClassroomRequest();
 			req.setClassroom(classroom);
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
 			operResp = classroomComp.createNewClassroom(req); 			
 			operResp.setSuccess(true);
@@ -118,7 +119,7 @@ public class ClassroomService
 			GetClassroomRequest req = new GetClassroomRequest();
 			req.setId(classroomid);;
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
 			operResp = classroomComp.getClassroom(req); 			
 			operResp.setSuccess(true);
@@ -177,7 +178,7 @@ public class ClassroomService
 			UpdateClassroomRequest req = new UpdateClassroomRequest();
 			req.setClassroom(classroom);
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
 			operResp = classroomComp.updateClassroom(req);
 			operResp.setSuccess(true);
@@ -213,7 +214,7 @@ public class ClassroomService
 		{
 			logger.trace("About to delete classroom record = "+classroomid);						
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
 			DeleteClassroomRequest req = new DeleteClassroomRequest();
 			req.setId(classroomid);
@@ -263,7 +264,7 @@ public class ClassroomService
 			req.setQuery(name);
 			req.setRecordType("CLASSROOM");
 			
-			String schoolId = CommonUtils.getSubDomain(uri);
+			String schoolId = ServletUtils.getSubDomain(uri);
 			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
 			searchResp = classroomComp.searchClassroom(req);
 		

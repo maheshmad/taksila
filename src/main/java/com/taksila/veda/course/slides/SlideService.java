@@ -1,8 +1,6 @@
 package com.taksila.veda.course.slides;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -18,19 +16,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideRequest;
@@ -79,7 +76,7 @@ public class SlideService
 				logger.trace("********  inside thread to convert images  ");
 				
 				BaseResponse bResp = new BaseResponse(); 
-				String schoolId = CommonUtils.getSubDomain(uri);
+				String schoolId = ServletUtils.getSubDomain(uri);
 				SlideComponent slideComp = new SlideComponent(schoolId);
 				try 
 				{
@@ -146,7 +143,7 @@ public class SlideService
 					CreateSlideRequest req = new CreateSlideRequest();
 					req.setSlide(slide);
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					SlideComponent slideComp = new SlideComponent(schoolId);
 					operResp = slideComp.createNewSlide(req); 			
 					operResp.setSuccess(true);
@@ -191,9 +188,9 @@ public class SlideService
 				try 
 				{
 					GetSlideRequest req = new GetSlideRequest();
-					req.setId(Integer.valueOf(slideid));;
+					req.setId(slideid);;
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					SlideComponent slideComp = new SlideComponent(schoolId);
 					operResp = slideComp.getSlide(req); 			
 					operResp.setSuccess(true);
@@ -242,7 +239,7 @@ public class SlideService
 					req.setSearchParam(new Slide());
 					req.getSearchParam().setTopicid(topicid);
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					SlideComponent slideComp = new SlideComponent(schoolId);
 					operResp = slideComp.getSlidesByTopicId(req); 			
 					operResp.setSuccess(true);
@@ -282,7 +279,7 @@ public class SlideService
 				ByteArrayOutputStream operResp = null;
 				try 
 				{										
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					SlideComponent slideComp = new SlideComponent(schoolId);
 					double scale = "large".equals(size)?1.0:0.5;
 					operResp = slideComp.getSlideImage(Integer.parseInt(slideid), scale); 								
@@ -352,7 +349,7 @@ public class SlideService
 					UpdateSlideRequest req = new UpdateSlideRequest();
 					req.setSlide(slide);
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					SlideComponent slideComp = new SlideComponent(schoolId);
 					operResp = slideComp.updateSlide(req);
 					operResp.setSuccess(true);
@@ -399,10 +396,10 @@ public class SlideService
 				{
 					logger.trace("About to delete slide record = "+slideid);						
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					SlideComponent slideComp = new SlideComponent(schoolId);
 					DeleteSlideRequest req = new DeleteSlideRequest();
-					req.setId(Integer.valueOf(slideid));
+					req.setId(slideid);
 					operResp = slideComp.deleteSlide(req);
 					operResp.setSuccess(true);
 				}
@@ -457,7 +454,7 @@ public class SlideService
 					req.setQuery(name == null ? "": name);
 					req.setRecordType("SLIDE");
 					
-					String schoolId = CommonUtils.getSubDomain(uri);
+					String schoolId = ServletUtils.getSubDomain(uri);
 					SlideComponent slideComp = new SlideComponent(schoolId);
 					searchResp = slideComp.searchSlide(req);
 				

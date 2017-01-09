@@ -100,7 +100,7 @@ public class ChapterDAO
 	 * @throws SQLException
 	 * @throws NamingException 
 	 */
-	public List<Chapter> searchChaptersByCourseId(int courseid) throws SQLException, NamingException
+	public List<Chapter> searchChaptersByCourseId(String courseid) throws SQLException, NamingException
 	{
 		List<Chapter> chapterHits = new ArrayList<Chapter>();				
 		PreparedStatement stmt = null;		
@@ -110,7 +110,7 @@ public class ChapterDAO
 		{
 			this.sqlDBManager.connect();			
 			stmt = this.sqlDBManager.getPreparedStatement(search_chapter_by_courseid_sql);
-			stmt.setInt(1, courseid);
+			stmt.setInt(1, Integer.parseInt(courseid));
 			
 			ResultSet resultSet = stmt.executeQuery();	
 			while (resultSet.next()) 
@@ -185,7 +185,7 @@ public class ChapterDAO
 	 * @throws SQLException
 	 * @throws NamingException 
 	 */
-	public Chapter getChapterById(int id) throws SQLException, NamingException
+	public Chapter getChapterById(String id) throws SQLException, NamingException
 	{						
 		PreparedStatement stmt = null;	
 		Chapter chapter = null;
@@ -193,7 +193,7 @@ public class ChapterDAO
 		{
 			this.sqlDBManager.connect();
 			stmt = this.sqlDBManager.getPreparedStatement(search_chapter_by_id_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			ResultSet resultSet = stmt.executeQuery();	
 			if (resultSet.next()) 
 			{
@@ -305,7 +305,7 @@ public class ChapterDAO
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteChapter(int id) throws Exception 
+	public boolean deleteChapter(String id) throws Exception 
 	{
 		logger.debug("Entering into deleteChapter():::::");
 		this.sqlDBManager.connect();	
@@ -313,7 +313,7 @@ public class ChapterDAO
 		try
 		{
 			stmt = this.sqlDBManager.getPreparedStatement(delete_chapter_sql);
-			stmt.setInt(1, id);
+			stmt.setInt(1, Integer.parseInt(id));
 			int t = stmt.executeUpdate();
 			if (t > 0)
 				return true;
