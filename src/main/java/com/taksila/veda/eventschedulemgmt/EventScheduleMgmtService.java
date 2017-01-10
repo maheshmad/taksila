@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
 import com.taksila.servlet.utils.ServletUtils;
+import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleResponse;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.DeleteEventScheduleRequest;
@@ -34,6 +35,8 @@ import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.GetEventScheduleRespo
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.SearchEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.SearchEventScheduleResponse;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleResponse;
+import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleSessionIdRequest;
+import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleSessionIdResponse;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventSchedule;
 import com.taksila.veda.security.SecurityUtils;
 import com.taksila.veda.utils.CommonUtils;
@@ -83,6 +86,52 @@ public class EventScheduleMgmtService
 		asyncResp.resume(Response.ok(operResp).build());
 
     }
+	
+	
+	/**
+	 * 	 
+	 */
+	@POST	
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@ManagedAsync
+	@Path("{eventScheduleid}/session/{eventSessionId}")
+    public void updateSessionId(@Context HttpServletRequest request,@Context HttpServletResponse response,
+    		@PathParam("eventScheduleid") String eventScheduleid,
+    		@PathParam("eventSessionId") String eventSessionId,
+    		@Context UriInfo uri,	
+    		@Suspended final AsyncResponse asyncResp) 
+    {    	
+		String tenantId = ServletUtils.getSubDomain(uri);
+		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(tenantId);
+		UpdateEventScheduleSessionIdResponse operResp = new UpdateEventScheduleSessionIdResponse();
+		
+		logger.trace("processing updateSessionId ..");
+		try 
+		{
+			String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
+									
+			UpdateEventScheduleSessionIdRequest req = new UpdateEventScheduleSessionIdRequest();
+			req.setUserRecordId(principalUserId);
+			req.setEventScheduleId(eventScheduleid);
+			req.setEventSessionId(eventSessionId);
+			
+			operResp = eventScheduleComp.updateEventScheduleSessionId(req); 
+			operResp.setStatus(StatusType.SUCCESS);
+			operResp.setSuccess(true);
+		} 
+		catch (Exception ex) 
+		{		
+			ex.printStackTrace();
+			CommonUtils.handleExceptionForResponse(operResp, ex);
+		}
+		
+		asyncResp.resume(Response.ok(operResp).build());
+
+    }
+	
+	
+	
 	
 	/**
 	 * 

@@ -29,8 +29,9 @@ public class EventScheduleDAO
 																			EVENT_SCHEDULE_TABLE.eventTitle.value()+","+
 																			EVENT_SCHEDULE_TABLE.eventDescription.value()+","+
 																			EVENT_SCHEDULE_TABLE.updatedBy.value()+","+
-																			EVENT_SCHEDULE_TABLE.eventType.value()+","+		
-																			EVENT_SCHEDULE_TABLE.eventStatus.value()+") "+
+																			EVENT_SCHEDULE_TABLE.eventType.value()+","+	
+																			EVENT_SCHEDULE_TABLE.eventStatus.value()+","+	
+																			EVENT_SCHEDULE_TABLE.eventSessionId.value()+") "+
 																	"VALUES (?,?,?,?,?,?,?,?);";		
 	
 	private static String update_eventSchedule_sql = "UPDATE EVENT_SCHEDULE SET "+
@@ -43,7 +44,14 @@ public class EventScheduleDAO
 																			EVENT_SCHEDULE_TABLE.updatedBy.value()+" = ? ,"+
 																			EVENT_SCHEDULE_TABLE.eventType.value()+" = ? ,"+	
 																			EVENT_SCHEDULE_TABLE.eventStatus.value()+" = ? "+
+																			EVENT_SCHEDULE_TABLE.eventSessionId.value()+" = ? "+
 													" WHERE "+EVENT_SCHEDULE_TABLE.id.value()+" = ?";
+	
+	private static String update_event_schedule_session_sql = "UPDATE EVENT_SCHEDULE SET "+																
+																EVENT_SCHEDULE_TABLE.eventSessionId.value()+" = ? "+
+																EVENT_SCHEDULE_TABLE.updatedBy.value()+" = ? "+
+																EVENT_SCHEDULE_TABLE.lastUpdatedOn.value()+" = "+EVENT_SCHEDULE_TABLE.lastUpdatedOn.value()+", "+
+																" WHERE "+EVENT_SCHEDULE_TABLE.id.value()+" = ?";
 	
 	private static String delete_eventSchedule_sql = "DELETE FROM EVENT_SCHEDULE WHERE "+EVENT_SCHEDULE_TABLE.id.value()+" = ?";
 	private static String search_event_schedule_by_classroomid_sql = "SELECT * FROM EVENT_SCHEDULE  WHERE "+EVENT_SCHEDULE_TABLE.classroomId.value()+" = ?";	
@@ -105,7 +113,8 @@ public class EventScheduleDAO
 		updatedBy("updated_by"),
 		lastUpdatedOn("last_updated_on"),
 		eventType("event_type"),
-		eventStatus("event_status");
+		eventStatus("event_status"),
+		eventSessionId("event_session_id");
 		private String name;       
 	    private EVENT_SCHEDULE_TABLE(String s) 
 	    {
@@ -144,7 +153,8 @@ public class EventScheduleDAO
 			eventSchedule.setEventStatus(EventStatusType.fromValue(resultSet.getString(EVENT_SCHEDULE_TABLE.eventStatus.value())));
 		if (resultSet.getString(EVENT_SCHEDULE_TABLE.eventType.value()) != null)
 			eventSchedule.setEventType(EventType.fromValue(resultSet.getString(EVENT_SCHEDULE_TABLE.eventType.value())));
-				
+		
+		eventSchedule.setEventSessionId(resultSet.getString(EVENT_SCHEDULE_TABLE.eventSessionId.value()));
 		
 		return eventSchedule;
 	}
@@ -276,16 +286,16 @@ public class EventScheduleDAO
 	 * @return
 	 * @throws Exception 
 	 */
-	public EventSchedule getEventScheduleById(String eventid) throws Exception
+	public EventSchedule getEventScheduleById(String scheduleId) throws Exception
 	{						
 		PreparedStatement stmt = null;	
 		EventSchedule eventSchedule = null;
-		logger.trace("searching eventSchedules by id ="+eventid+" sql = "+search_event_schedule_by_id_sql);
+		logger.trace("searching eventSchedules by id ="+scheduleId+" sql = "+search_event_schedule_by_id_sql);
 		try
 		{
 			this.sqlDBManager.connect();			
 			stmt = this.sqlDBManager.getPreparedStatement(search_event_schedule_by_id_sql);
-			stmt.setString(1, eventid);
+			stmt.setString(1, scheduleId);
 			ResultSet resultSet = stmt.executeQuery();	
 			if (resultSet.next()) 
 			{
@@ -395,6 +405,44 @@ public class EventScheduleDAO
 				stmt.setString(9, null);
 			
 			stmt.setInt(10, Integer.parseInt(eventSchedule.getId()));
+			
+			int t = stmt.executeUpdate();
+			if (t > 0)
+				return true;
+			else
+				return false;
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();			
+			throw ex;
+		}
+		finally
+		{
+			this.sqlDBManager.close(stmt);
+		}
+								
+	}
+	
+	
+	/**
+	 * 
+	 * @param eventSchedule
+	 * @return
+	 * @throws Exception
+	 */	
+	public boolean updateEventScheduleSession(String scheduleId, String sessionid, String byUser) throws Exception 
+	{
+		logger.debug("Entering into updateEventScheduleSession():::::");		
+		PreparedStatement stmt = null;
+		try
+		{
+			this.sqlDBManager.connect();	
+			stmt = this.sqlDBManager.getPreparedStatement(update_event_schedule_session_sql);	
+												
+			stmt.setString(1, sessionid);			
+			stmt.setString(2, byUser);
+			stmt.setInt(3, Integer.parseInt(scheduleId));			
 			
 			int t = stmt.executeUpdate();
 			if (t > 0)

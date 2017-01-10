@@ -29,6 +29,8 @@ import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.SearchEventScheduleRe
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.SearchEventScheduleResponse;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleResponse;
+import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleSessionIdRequest;
+import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleSessionIdResponse;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventSchedule;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventStatusType;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventType;
@@ -208,8 +210,7 @@ public class EventScheduleMgmtComponent
 			 * validate
 			 */
 			ErrorInfo errorInfo = this.validateEventSchedule(eventScheudle);
-			
-			
+						
 			if (errorInfo.getErrors() != null && !errorInfo.getErrors().isEmpty())
 			{
 				resp.setErrorInfo(errorInfo);
@@ -238,6 +239,63 @@ public class EventScheduleMgmtComponent
 		return resp;
 		
 	}
+	
+		
+	
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 */
+	public UpdateEventScheduleSessionIdResponse updateEventScheduleSessionId(UpdateEventScheduleSessionIdRequest req)
+	{
+		UpdateEventScheduleSessionIdResponse resp = new UpdateEventScheduleSessionIdResponse();
+		try 
+		{									
+			/*
+			 * validation
+			 */
+			if (StringUtils.isBlank(req.getEventScheduleId()) ||
+				StringUtils.isBlank(req.getEventSessionId()))
+			{
+				ErrorInfo errorInfo = new ErrorInfo();
+				if (StringUtils.isBlank(req.getEventScheduleId()))
+					errorInfo.getErrors().add(CommonUtils.buildErr("eventScheduleId", "This is a mandatory field."));
+				
+				if (StringUtils.isBlank(req.getEventSessionId()))
+					errorInfo.getErrors().add(CommonUtils.buildErr("eventSessionId", "This is a mandatory field."));
+				
+				resp.setErrorInfo(errorInfo);
+				return resp;
+			}
+			
+			/*
+			 * update
+			 */
+			boolean updateSucceded = eventScheduleDAO.updateEventScheduleSession(req.getEventScheduleId(), req.getEventSessionId(), req.getUserRecordId());
+			if (updateSucceded)
+			{
+				resp.setStatus(StatusType.SUCCESS);
+				resp.setEventSchedule(eventScheduleDAO.getEventScheduleById(req.getEventScheduleId()));
+			}
+			else
+			{
+				resp.setStatus(StatusType.FAILED);
+				resp.setErrorInfo(CommonUtils.buildErrorInfo("FAILED", "Database was not updated! Please check your input"));
+				resp.setMsg("Updates to DB failed , please try again or contact support ");
+
+			}
+			
+		} 
+		catch (Exception e) 
+		{
+			CommonUtils.handleExceptionForResponse(resp, e);
+		}
+		return resp;
+		
+	}
+	
+	
 	
 	/**
 	 * 
