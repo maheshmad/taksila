@@ -110,10 +110,9 @@ public class EventAttendanceDAO
 	 * 
 	 * @param id
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public List<EventAttendance> searchEventAttendanceBySessionScheduleId(String classroomid) throws SQLException, NamingException
+	public List<EventAttendance> searchEventAttendanceBySessionScheduleId(String classroomid) throws Exception
 	{						
 		List<EventAttendance> attendanceHits = new ArrayList<EventAttendance>();	
 		PreparedStatement stmt = null;	
@@ -146,10 +145,9 @@ public class EventAttendanceDAO
 	 * 
 	 * @param id
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public EventAttendance getEventAttendanceById(String id) throws SQLException, NamingException
+	public EventAttendance getEventAttendanceById(String id) throws Exception
 	{						
 		
 		PreparedStatement stmt = null;	

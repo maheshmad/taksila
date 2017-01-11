@@ -27,6 +27,7 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.eventschedulemgmt.EventScheduleMgmtComponent;
@@ -43,7 +44,7 @@ import com.taksila.veda.model.api.usermgmt.v1_0.SearchUserResponse;
 import com.taksila.veda.model.api.usermgmt.v1_0.UpdateUserResponse;
 import com.taksila.veda.utils.CommonUtils;
 
-
+@Component
 @Path("/user")
 public class UserService 
 {

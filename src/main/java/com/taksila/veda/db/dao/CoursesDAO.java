@@ -100,10 +100,9 @@ public class CoursesDAO
 	 * 
 	 * @param q
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public List<Course> searchCoursesByTitle(String q) throws SQLException, NamingException
+	public List<Course> searchCoursesByTitle(String q) throws Exception
 	{
 		List<Course> courseHits = new ArrayList<Course>();				
 		PreparedStatement stmt = null;		
@@ -144,10 +143,9 @@ public class CoursesDAO
 	 * 
 	 * @param id
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public Course getCoursesById(String id) throws SQLException, NamingException
+	public Course getCoursesById(String id) throws Exception
 	{						
 		PreparedStatement stmt = null;	
 		Course course = null;

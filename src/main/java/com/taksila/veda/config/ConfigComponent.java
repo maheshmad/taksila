@@ -3,9 +3,12 @@ package com.taksila.veda.config;
 import java.io.File;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.dao.ConfigDAO;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
@@ -16,11 +19,15 @@ import com.taksila.veda.model.api.config.v1_0.UpdateConfigResponse;
 import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.utils.CommonUtils;
 
+@Component
 public class ConfigComponent 
 {	
 	private static Logger logger = LogManager.getLogger(ConfigComponent.class.getName());
 	static Map<ConfigId, String> configsMap = null;
 	private String tenantlId;
+	
+	@Inject
+	static ConfigDAO configDAO;
 	
 	static
 	{
@@ -70,7 +77,7 @@ public class ConfigComponent
 	{
 		GetConfigurationResponse resp = new GetConfigurationResponse();
 		resp.setForRole(request.getForRole());
-		ConfigDAO configDAO = new ConfigDAO();
+//		ConfigDAO configDAO = new ConfigDAO();
 		
 		try 
 		{
@@ -93,7 +100,7 @@ public class ConfigComponent
 	public UpdateConfigResponse updateConfig(UpdateConfigRequest request)
 	{
 		UpdateConfigResponse resp = new UpdateConfigResponse();
-		ConfigDAO configDAO = new ConfigDAO();
+//		ConfigDAO configDAO = new ConfigDAO();
 		
 		try 
 		{
@@ -115,11 +122,11 @@ public class ConfigComponent
 	}
 	
 	
-	private static synchronized void loadConfigs(boolean isLatestUpdateRequired)
+	private synchronized static void loadConfigs(boolean isLatestUpdateRequired)
 	{
 		try
 		{
-			ConfigDAO configDAO = new ConfigDAO();
+//			ConfigDAO configDAO = new ConfigDAO();
 			configsMap = configDAO.getConfigsByRole(null);			
 		}		 
 		catch(Exception e)

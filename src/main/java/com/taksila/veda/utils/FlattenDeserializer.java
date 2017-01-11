@@ -14,7 +14,7 @@ class FlattenDeserializer implements JsonDeserializer<Map<String, String>>
 	    @Override
 	    public Map<String, String> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException 
 	    {
-	        Map<String, String> map = new LinkedHashMap<>();
+	        Map<String, String> map = new LinkedHashMap<String, String>();
 
 	        if (json.isJsonArray()) 
 	        {

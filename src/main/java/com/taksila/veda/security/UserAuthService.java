@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
@@ -33,6 +34,7 @@ import com.taksila.veda.model.api.security.v1_0.UserLoginResponse;
 import com.taksila.veda.model.db.security.v1_0.UserSession;
 import com.taksila.veda.utils.CommonUtils;
 
+@Component
 @Path("/auth")
 public class UserAuthService 
 {

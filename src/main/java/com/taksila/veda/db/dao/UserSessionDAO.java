@@ -180,13 +180,14 @@ public class UserSessionDAO
 	}
 	
 	
-	public boolean invalidateUserSession(String sessionid) throws SQLException, NamingException 
+	public boolean invalidateUserSession(String sessionid) throws Exception 
 	{
 		logger.debug("Entering into invalidateUserSession():::::");
-		this.sqlDBManager.connect();	
+		
 		PreparedStatement stmt = null;
 		try
 		{
+			this.sqlDBManager.connect();
 			stmt = this.sqlDBManager.getPreparedStatement(delete_user_session_sql);
 			stmt.setString(1, sessionid);			
 			int t = stmt.executeUpdate();

@@ -29,7 +29,7 @@ public class UploadSlideReadListenerImpl implements ReadListener
 	private HttpServletResponse servletResponse = null; 
 	private HttpServletRequest servletRequest = null; 
 	private AsyncContext asynCtx = null; 
-	private Queue<BaseResponse> queue = new LinkedBlockingQueue<>();
+	private Queue<BaseResponse> queue = new LinkedBlockingQueue<BaseResponse>();
 	private static Logger logger = LogManager.getLogger(UploadSlideReadListenerImpl.class.getName());   
 	
 	public UploadSlideReadListenerImpl(AsyncContext c) 

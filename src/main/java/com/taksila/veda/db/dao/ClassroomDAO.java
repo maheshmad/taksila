@@ -102,10 +102,9 @@ public class ClassroomDAO
 	 * 
 	 * @param q
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public List<Classroom> searchClassroomsByTitle(String q) throws SQLException, NamingException
+	public List<Classroom> searchClassroomsByTitle(String q) throws Exception
 	{
 		List<Classroom> classroomHits = new ArrayList<Classroom>();				
 		PreparedStatement stmt = null;		
@@ -146,10 +145,9 @@ public class ClassroomDAO
 	 * 
 	 * @param id
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public Classroom getClassroomById(String id) throws SQLException, NamingException
+	public Classroom getClassroomById(String id) throws Exception
 	{						
 		PreparedStatement stmt = null;	
 		Classroom classroom = null;

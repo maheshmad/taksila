@@ -98,10 +98,9 @@ public class TopicDAO
 	 * 
 	 * @param q
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public List<Topic> searchTopicsByTitle(String q) throws SQLException, NamingException
+	public List<Topic> searchTopicsByTitle(String q) throws Exception
 	{
 		List<Topic> topicHits = new ArrayList<Topic>();				
 		PreparedStatement stmt = null;		
@@ -143,10 +142,9 @@ public class TopicDAO
 	 * 
 	 * @param q
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public List<Topic> searchTopicsByChapterid(String chapterid) throws SQLException, NamingException
+	public List<Topic> searchTopicsByChapterid(String chapterid) throws Exception
 	{
 		List<Topic> topicHits = new ArrayList<Topic>();				
 		PreparedStatement stmt = null;		
@@ -183,10 +181,9 @@ public class TopicDAO
 	 * 
 	 * @param id
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public Topic getTopicById(String id) throws SQLException, NamingException
+	public Topic getTopicById(String id) throws Exception
 	{						
 		PreparedStatement stmt = null;	
 		Topic topic = null;

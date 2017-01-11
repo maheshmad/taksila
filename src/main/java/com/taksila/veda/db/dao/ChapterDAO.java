@@ -97,10 +97,9 @@ public class ChapterDAO
 	 * 
 	 * @param q
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public List<Chapter> searchChaptersByCourseId(String courseid) throws SQLException, NamingException
+	public List<Chapter> searchChaptersByCourseId(String courseid) throws Exception
 	{
 		List<Chapter> chapterHits = new ArrayList<Chapter>();				
 		PreparedStatement stmt = null;		
@@ -137,10 +136,9 @@ public class ChapterDAO
 	 * 
 	 * @param q
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public List<Chapter> searchChaptersByTitle(String q) throws SQLException, NamingException
+	public List<Chapter> searchChaptersByTitle(String q) throws Exception
 	{
 		List<Chapter> chapterHits = new ArrayList<Chapter>();				
 		PreparedStatement stmt = null;		
@@ -182,10 +180,9 @@ public class ChapterDAO
 	 * 
 	 * @param id
 	 * @return
-	 * @throws SQLException
-	 * @throws NamingException 
+	 * @throws Exception 
 	 */
-	public Chapter getChapterById(String id) throws SQLException, NamingException
+	public Chapter getChapterById(String id) throws Exception
 	{						
 		PreparedStatement stmt = null;	
 		Chapter chapter = null;

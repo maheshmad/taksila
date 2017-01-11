@@ -10,9 +10,11 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 @Provider
 @PreMatching
+@Component
 public class CORSResponseFilter implements ContainerResponseFilter
 {
 	static Logger logger = LogManager.getLogger(CORSResponseFilter.class.getName()); 

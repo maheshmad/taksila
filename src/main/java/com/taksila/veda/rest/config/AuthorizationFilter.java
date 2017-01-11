@@ -12,6 +12,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Uma
@@ -20,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 @Provider
 @PreMatching
 @Priority(4)
+@Component
 public class AuthorizationFilter implements ContainerRequestFilter{
 	
 	private static Logger logger = LogManager.getLogger(AuthorizationFilter.class.getName());

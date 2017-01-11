@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
@@ -39,6 +40,7 @@ import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.model.db.config.v1_0.ConfigSection;
 import com.taksila.veda.utils.CommonUtils;
 
+@Component
 @Path("/config")
 public class ConfigService 
 {
@@ -143,6 +145,7 @@ public class ConfigService
 	public void getConfigInfo(@Context HttpServletRequest request, @Context final UriInfo uri,					
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
+		logger.trace("Inside getConfigInfo");
 		executor.execute( new Runnable() 
 		{
 			public void run() 

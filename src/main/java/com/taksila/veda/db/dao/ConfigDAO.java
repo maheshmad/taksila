@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.SQLDataBaseManager;
 import com.taksila.veda.model.db.base.v1_0.UserRole;
@@ -21,15 +23,17 @@ import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.model.db.config.v1_0.ConfigSection;
 import com.taksila.veda.utils.CommonUtils;
 
+@Component
 public class ConfigDAO 
 {
 	SQLDataBaseManager sqlDBManager= null;
 	static Logger logger = LogManager.getLogger(ConfigDAO.class.getName());
 	
-	public ConfigDAO() 
+	@Inject
+	public ConfigDAO(SQLDataBaseManager sqlDataBaseManager) 
 	{
 		logger.trace(" Initializing ConfigDAO............ ");		
-		this.sqlDBManager = new SQLDataBaseManager();
+		this.sqlDBManager = sqlDataBaseManager;
 		logger.trace(" Completed initializing ConfigDAO............ ");
 		
 	}

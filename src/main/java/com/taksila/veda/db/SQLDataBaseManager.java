@@ -8,18 +8,21 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Map;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class SQLDataBaseManager 
 {
 	private static Logger logger = LogManager.getLogger(SQLDataBaseManager.class.getName());
+	
+	@Inject
+	DataSource dataSource;		
 	
 	private Connection conn = null;		
 	private BaseSQLDialect sqlDialect; 		
@@ -30,7 +33,7 @@ public class SQLDataBaseManager
 	{
 		DB2,
 		MYSQL,
-		ORACLE,
+		ORACLE, 
 		POSTGRES
 	}
 	
@@ -41,8 +44,7 @@ public class SQLDataBaseManager
 		DB_SQL_JDBC_PWD,
 		DB_SQL_DIALECT_TYPE,
 		INSTANTIATED_FROM_CLASS
-	}
-		
+	}	
 	
 	private void setSqlDialect() 
 	{				
@@ -67,7 +69,7 @@ public class SQLDataBaseManager
 	}
 	
 	
-	public void connect() throws SQLException, NamingException 
+	public void connect() throws Exception 
 	{		
 		try	
 		{
@@ -75,10 +77,10 @@ public class SQLDataBaseManager
 				{
 					logger.debug("############     	OPENING CONNECTION  (in class "+this.instantiatedFromClassName+")  ############");					
 
-					Context initContext = new InitialContext();
-					Context envContext  = (Context)initContext.lookup("java:/comp/env");
-					DataSource ds = (DataSource)envContext.lookup("jdbc/xe1");
-					conn = ds.getConnection();
+//					Context initContext = new InitialContext();
+//					Context envContext  = (Context)initContext.lookup("java:/comp/env");
+//					DataSource ds = (DataSource)envContext.lookup("jdbc/xe1");
+					conn = dataSource.getConnection();
 
 				}
 				else;
@@ -99,12 +101,7 @@ public class SQLDataBaseManager
 				logger.debug("*                                                                                            *");
 				logger.debug("**********************************************************************************************");
 				throw ex;
-			}
-			catch(NamingException nex)
-			{
-				nex.printStackTrace();
-				throw nex;
-			}
+			}			
 			catch(Exception ex) 
 			{
 				this.HandleException("connect()", ex);
@@ -379,9 +376,4 @@ public class SQLDataBaseManager
 	}
 	
 	
-	
-	public BaseSQLDialect getSqlDialect() {
-		return sqlDialect;
-	}
-
 }
