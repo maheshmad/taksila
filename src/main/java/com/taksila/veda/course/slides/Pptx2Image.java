@@ -28,8 +28,12 @@ import org.apache.poi.xslf.usermodel.XSLFComments;
 import org.apache.poi.xslf.usermodel.XSLFImageRenderer;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.config.ConfigComponent;
+import com.taksila.veda.config.TenantConfigManager;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideResponse;
 import com.taksila.veda.model.api.course.v1_0.GetSlideRequest;
@@ -43,10 +47,22 @@ import com.taksila.veda.utils.CommonUtils;
  *
  * @author Yegor Kozlov
  */
+@Component
 public class Pptx2Image 
 {
 	private static String baseDirectory = "C:\\files\\"; 
 	static Logger logger = LogManager.getLogger(SlideComponent.class.getName());	
+	
+	@Autowired
+	TenantConfigManager TenantConfigManager;
+	private String tenantId;
+	
+	public Pptx2Image(@Value("tenantId") String tenantId)
+	{
+		this.tenantId = tenantId;
+	}
+	
+	
 	static class Pptx2ImageOptions
 	{
 		double scale = 1;
@@ -113,8 +129,9 @@ public class Pptx2Image
 //    }
 
     
-    public static String convertToImage(Pptx2ImageOptions options) throws IOException, Exception 
+    public String convertToImage(Pptx2ImageOptions options) throws IOException, Exception 
     {
+    	ConfigComponent config = TenantConfigManager.getTenantConfig(this.tenantId);
     	int i = 0;    
     	System.out.println("Processing " + options.filename +" and topicid "+options.topicid);
     	String tempFolderId = "";
@@ -155,7 +172,7 @@ public class Pptx2Image
          // read the .pptx file
 //         File f = new File(filename);
 //         InputStream st = new FileInputStream(f);
-         String filePath = ConfigComponent.getUserTempFilePath("slides",options.topicid)+"\\"+options.filename;
+         String filePath = config.getUserTempFilePath("slides",options.topicid)+"\\"+options.filename;
          File f = new File(filePath);
          if (!f.exists())
         	 throw new Exception("File "+options.filename+"not found ..");   

@@ -13,6 +13,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.db.dao.UserImagesDAO;
@@ -38,23 +42,28 @@ import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageInfo;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageType;
+import com.taksila.veda.utils.AppEnvConfig;
 import com.taksila.veda.utils.CommonUtils;
 
-
+@Component
+@Scope(value="prototype")
 public class UserComponent 
-{
+{	
+	@Autowired
+	ApplicationContext applicationContext;
+	
 	static Logger logger = LogManager.getLogger(UserComponent.class.getName());	
 	private UsersDAO usersDAO = null;
 	private UserImagesDAO userImagesDAO = null;
-	private String schoolId =null;	
+
+	private String tenantId;
 	
 	public UserComponent(String tenantId) 
 	{
-		this.schoolId = tenantId;
-		this.usersDAO = new UsersDAO(this.schoolId);		
-		this.userImagesDAO = new UserImagesDAO(this.schoolId);		
+		this.tenantId = tenantId;
+		this.usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
+		this.userImagesDAO = applicationContext.getBean(UserImagesDAO.class,tenantId);	
 	}
-	
 	/**
 	 * 
 	 * @param req
@@ -526,7 +535,7 @@ public class UserComponent
 	{
 		try
 		{
-			String invitationUrl = ConfigComponent.getConfig(ConfigId.GENERAL_DOMAIN_ROOT);
+			String invitationUrl = AppEnvConfig.GENERAL_DOMAIN_ROOT;
 			String msg = "Hello "+user.getFirstName()+", <br /><br /><br />"
 					+ "Welcome to Veda. <br />"
 					+ "Please click below to activate and set up your account.<br /><br />"
@@ -546,7 +555,7 @@ public class UserComponent
 					+ "<br/>";
 			
 			EmailUtils emailUtil = new EmailUtils();
-			emailUtil.sendMail(user.getEmailId(), "support@localhost.com", "Welcome", msg, null);
+			emailUtil.sendMail(this.tenantId,user.getEmailId(), "support@localhost.com", "Welcome", msg, null);
 		}
 		catch(Exception ex)
 		{
@@ -631,9 +640,9 @@ public class UserComponent
 	 */
 	public String getUserTempFilePath(String userid)
 	{
-		String basePath = ConfigComponent.getConfig(ConfigId.TEMP_FILE_PATH);
+		String basePath = AppEnvConfig.TEMP_FILE_PATH;
 		basePath = StringUtils.removeEnd(basePath, "\\");
-		String dirPath = ConfigComponent.getConfig(ConfigId.TEMP_FILE_PATH)+"\\users\\"+userid+"\\";
+		String dirPath = AppEnvConfig.TEMP_FILE_PATH+"\\users\\"+userid+"\\";
 		boolean dirExits = new File(dirPath).mkdirs();
 		return dirPath;  
 	}
@@ -650,7 +659,7 @@ public class UserComponent
 		switch (req.getRecordType())
 		{
 			case EVENTSCHEDULE:
-				EventScheduleMgmtComponent evenScheMgmtComp = new EventScheduleMgmtComponent(this.schoolId);
+				EventScheduleMgmtComponent evenScheMgmtComp = new EventScheduleMgmtComponent(this.tenantId);
 				allowedActionsResp = evenScheMgmtComp.getAllowedActions(req);
 			default:				
 				allowedActionsResp.setErrorInfo(CommonUtils.buildErrorInfo("RECORD TYPE", "Unsupported Record Type"));

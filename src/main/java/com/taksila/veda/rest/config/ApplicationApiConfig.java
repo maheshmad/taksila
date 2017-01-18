@@ -24,6 +24,7 @@ public class ApplicationApiConfig extends ResourceConfig
 	{
 		System.out.println("Inside veda application api config !!!!!!!!!!!!!");
 		register(ConfigService.class);
+		packages("com.taksila.veda");
 	}
 	
 }

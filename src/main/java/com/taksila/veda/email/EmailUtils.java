@@ -11,23 +11,31 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.owasp.esapi.ESAPI;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.config.ConfigComponent;
-import com.taksila.veda.model.db.config.v1_0.ConfigId;
+import com.taksila.veda.config.TenantConfigManager;
+import com.taksila.veda.utils.AppEnvConfig;
 
+@Component
 public class EmailUtils
 {	
-	public void sendMail(String to, String from, String subject, String msg,String cc) throws Exception
+	@Autowired
+	TenantConfigManager tenantConfigManager;
+	
+	public void sendMail(String tenantId, String to, String from, String subject, String msg,String cc) throws Exception
 	{
-	            
+	       ConfigComponent tenantConfig = tenantConfigManager.getTenantConfig(tenantId);     
+		   
 		   Properties props = new Properties();
-	       props.put("mail.transport.protocol", ConfigComponent.getConfig(ConfigId.SMTP_TRANSPORT_PROTOCOL));
-	       props.put("mail.smtp.host", ConfigComponent.getConfig(ConfigId.SMTP_HOST_URL));
-	       props.put("mail.smtp.socketFactory.port", ConfigComponent.getConfig(ConfigId.SMTP_SOCKET_FACTORY_PORT));  
-	       props.put("mail.smtp.socketFactory.class",  ConfigComponent.getConfig(ConfigId.SMTP_SOCKET_FACTORY_CLASS));  
-	       props.put("mail.smtp.auth", ConfigComponent.getConfig(ConfigId.SMTP_ENABLE_AUTHENTICATION));  
+	       props.put("mail.transport.protocol", AppEnvConfig.SMTP_TRANSPORT_PROTOCOL);
+	       props.put("mail.smtp.host", AppEnvConfig.SMTP_HOST_URL);
+	       props.put("mail.smtp.socketFactory.port", AppEnvConfig.SMTP_SOCKET_FACTORY_PORT);  
+	       props.put("mail.smtp.socketFactory.class",  AppEnvConfig.SMTP_SOCKET_FACTORY_CLASS);  
+	       props.put("mail.smtp.auth", AppEnvConfig.SMTP_ENABLE_AUTHENTICATION);  
 	       //props.put("mail.smtp.starttls.enable", Config.getConfig(ConfigId.SMTP_STARTTLS_ENABLE));
-	       props.put("mail.smtp.port", ConfigComponent.getConfig(ConfigId.SMTP_PORT)); 
+	       props.put("mail.smtp.port", AppEnvConfig.SMTP_PORT); 
 	              
 		   Authenticator auth = new SMTPAuthenticator();
 		   Session mailSession = Session.getDefaultInstance(props, auth);

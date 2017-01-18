@@ -4,38 +4,48 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.db.dao.UserSessionDAO;
 import com.taksila.veda.db.dao.UsersDAO;
 import com.taksila.veda.email.EmailUtils;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.security.v1_0.ResetPasswordResponse;
 import com.taksila.veda.model.api.security.v1_0.UserLoginResponse;
-import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.model.db.security.v1_0.UserSession;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
+import com.taksila.veda.utils.AppEnvConfig;
 import com.taksila.veda.utils.CommonUtils;
 
-
-public class UserAuthComponent 
+@Component
+@Scope(value="prototype")
+public class UserAuthComponent  
 {	
-	private String tenantId =null;	
-	private UsersDAO usersDAO = null;
-	private UserSessionDAO userSessionDAO = null;
+	@Autowired
+	ApplicationContext applicationContext;
+	
+	@Autowired
+	EmailUtils emailUtils;
+	
 	private String dateFormat = "MM/dd/yyyy HH:mm:ss z";
 	static Logger logger = LogManager.getLogger(UserAuthComponent.class.getName());
+	
+	private String tenantId;
 	
 	public UserAuthComponent(String tenantId) 
 	{
 		this.tenantId = tenantId;
-		this.usersDAO = new UsersDAO(tenantId);
-		this.userSessionDAO = new UserSessionDAO(tenantId);
 		
 	}
 	
 	public UserLoginResponse getLoggedInUser(String sessionid)
 	{
+		UserSessionDAO userSessionDAO = applicationContext.getBean(UserSessionDAO.class,tenantId);	
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
+
 		UserLoginResponse resp = new UserLoginResponse();
 		try 
 		{
@@ -65,10 +75,13 @@ public class UserAuthComponent
 	 */
 	public ResetPasswordResponse changePassword(String authTokenId,String newPassword, String confirmpassword)
 	{
+		UserSessionDAO userSessionDAO = applicationContext.getBean(UserSessionDAO.class,tenantId);	
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
+
 		ResetPasswordResponse resetResponse = new ResetPasswordResponse();
 		try 
 		{
-			UserSession userSession = this.userSessionDAO.getValidSession(authTokenId);
+			UserSession userSession = userSessionDAO.getValidSession(authTokenId);
 			if(userSession == null) 
 			{
 				resetResponse.setStatus(StatusType.FAILED);
@@ -83,9 +96,9 @@ public class UserAuthComponent
 				}
 				else
 				{
-					if (this.usersDAO.updatePassword(userSession.getUserId(), CommonUtils.getSecureHash(newPassword),false))
+					if (usersDAO.updatePassword(userSession.getUserId(), CommonUtils.getSecureHash(newPassword),false))
 					{
-						this.userSessionDAO.invalidateUserSession(userSession.getId());
+						userSessionDAO.invalidateUserSession(userSession.getId());
 						resetResponse.setStatus(StatusType.SUCCESS);
 						resetResponse.setMsg("<span style='color:green'>Password successfully changed! Please login with your new password</span>");							
 					}
@@ -116,6 +129,7 @@ public class UserAuthComponent
 	{
 		try 
 		{
+			UserSessionDAO userSessionDAO = applicationContext.getBean(UserSessionDAO.class,tenantId);	
 			userSessionDAO.invalidateUserSession(sessionid);
 		} 
 		catch (Exception e) 
@@ -134,6 +148,9 @@ public class UserAuthComponent
 	 */
 	public UserLoginResponse authenticate(String userid, String pwd, UserSession session) 
 	{
+		UserSessionDAO userSessionDAO = applicationContext.getBean(UserSessionDAO.class,tenantId);
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
+
 		UserLoginResponse loginResp = new UserLoginResponse();
 		try 
 		{
@@ -168,10 +185,12 @@ public class UserAuthComponent
 	 */
 	public ResetPasswordResponse emailPasswordResetLink(String emailid) 
 	{
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
+
 		ResetPasswordResponse resetResponse = new ResetPasswordResponse();
 		try 
 		{
-			User user = this.usersDAO.getUserByEmailId(emailid);
+			User user = usersDAO.getUserByEmailId(emailid);
 			if(user == null) 
 			{
 				resetResponse.setStatus(StatusType.FAILED);
@@ -183,7 +202,7 @@ public class UserAuthComponent
 				
 				String randomString = RandomStringUtils.random(8, true, true);
 				String tempPassword = CommonUtils.getSecureHash(randomString);
-				this.usersDAO.updatePassword(user.getUserId(), tempPassword,true);
+				usersDAO.updatePassword(user.getUserId(), tempPassword,true);
 				/*
 				 * send invitation email 
 				 */
@@ -209,7 +228,7 @@ public class UserAuthComponent
 	private void sendPasswordResetEmail(User user,String tempPassword) throws Exception
 	{
 		
-		String invitationUrl = ConfigComponent.getConfig(ConfigId.GENERAL_DOMAIN_ROOT);
+		String invitationUrl = AppEnvConfig.GENERAL_DOMAIN_ROOT;
 		String msg = "Hello "+user.getFirstName()+", <br /><br /><br />"
 				+ "Your password request has being processed. <br />"
 				+ "Please click below to login with your temporary password.<br /><br />"
@@ -228,8 +247,7 @@ public class UserAuthComponent
 				+ "<address>"
 				+ "<br/>";
 		
-		EmailUtils emailUtil = new EmailUtils();
-		emailUtil.sendMail(user.getEmailId(), "support@localhost.com", "Password Reset", msg, null);
+		this.emailUtils.sendMail(this.tenantId, user.getEmailId(), "support@localhost.com", "Password Reset", msg, null);
 		
 		
 	}

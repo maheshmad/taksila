@@ -7,7 +7,13 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import com.taksila.veda.config.TenantConfigManager;
 import com.taksila.veda.course.slides.Pptx2Image.Pptx2ImageOptions;
 import com.taksila.veda.db.dao.SlidesDAO;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
@@ -27,16 +33,25 @@ import com.taksila.veda.model.api.course.v1_0.UpdateSlideResponse;
 import com.taksila.veda.utils.CommonUtils;
 
 
+
+@Component
+@Scope(value="prototype")
 public class SlideComponent 
-{
+{	
+	@Autowired
+	ApplicationContext applicationContext;
+	@Autowired
+	TenantConfigManager tenantConfigManager;	
+	@Autowired
+	Pptx2Image pptx2Image;
+	
 	static Logger logger = LogManager.getLogger(SlideComponent.class.getName());	
 	private SlidesDAO slideDAO = null;
-	private String schoolId =null;	
 	
-	public SlideComponent(String tenantId) 
+	
+	public SlideComponent(@Value("tenantId") String tenantId) 
 	{
-		this.schoolId = tenantId;
-		this.slideDAO = new SlidesDAO(this.schoolId);				
+		this.slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);		
 	}
 	
 	public BaseResponse generateImagesFromPptx(String topicid, String uploadedfileid)
@@ -50,11 +65,11 @@ public class SlideComponent
 			options.topicid = topicid;
 			options.format= "png";
 			options.scale = 1.5;
-			Pptx2Image.convertToImage(options);
+			pptx2Image.convertToImage(options);
 			
 			logger.trace("---------------generating thumbs ------------------");
 			options.scale = 0.25;
-			Pptx2Image.convertToImage(options);
+			pptx2Image.convertToImage(options);
 			
 			bResp.setSuccess(true);
 		} 

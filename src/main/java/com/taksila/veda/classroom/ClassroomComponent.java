@@ -4,9 +4,14 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.dao.ClassroomDAO;
 import com.taksila.veda.db.dao.EnrollmentDAO;
+import com.taksila.veda.db.eventsessions.EventSessionsRepository;
 import com.taksila.veda.model.api.base.v1_0.Err;
 import com.taksila.veda.model.api.base.v1_0.SearchHitRecord;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
@@ -23,19 +28,21 @@ import com.taksila.veda.model.api.classroom.v1_0.UpdateClassroomRequest;
 import com.taksila.veda.model.api.classroom.v1_0.UpdateClassroomResponse;
 import com.taksila.veda.utils.CommonUtils;
 
-
+@Component
+@Scope(value="prototype")
 public class ClassroomComponent 
 {	
-	private String schoolId =null;	
+	@Autowired
+	ApplicationContext applicationContext;
+	
 	private EnrollmentDAO enrollmentDAO = null;
 	private ClassroomDAO classroomDAO = null;
 	static Logger logger = LogManager.getLogger(ClassroomComponent.class.getName());
 	
 	public ClassroomComponent(String tenantId) 
 	{
-		this.schoolId = tenantId;
-		this.enrollmentDAO = new EnrollmentDAO(this.schoolId);	
-		this.classroomDAO = new ClassroomDAO(this.schoolId);	
+		this.enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+		this.classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);	
 	}
 			
 	

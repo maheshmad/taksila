@@ -3,11 +3,12 @@ package com.taksila.veda.config;
 import java.io.File;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.dao.ConfigDAO;
@@ -20,35 +21,30 @@ import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.utils.CommonUtils;
 
 @Component
+@Lazy(value = true)
 public class ConfigComponent 
 {	
 	private static Logger logger = LogManager.getLogger(ConfigComponent.class.getName());
-	static Map<ConfigId, String> configsMap = null;
-	private String tenantlId;
+	Map<ConfigId, String> configsMap = null;	
+	String tenantId;
 	
-	@Inject
-	static ConfigDAO configDAO;
+	@Autowired
+	ApplicationContext applicationContext;
 	
-	static
+	ConfigDAO configDAO;
+		
+	public ConfigComponent(String tenantId) 
 	{
-		try 
-		{			
-			logger.trace("About to load configuration from database");			
-		} 
-		catch (Exception e) 
-		{		
-			logger.error("Error occured during configuration load"+e.getMessage());
-			e.printStackTrace();
-		}				
+		logger.trace("About to load configuration from database for tenantid = "+tenantId);		
+		this.tenantId = tenantId;
 	}
-
-
-	public static String getConfig(ConfigId key)
+	
+	public String getConfig(ConfigId key)
 	{
 		if (configsMap == null || configsMap.isEmpty())
 		{
-			logger.trace("About to load configuration from database");
 			loadConfigs(true);
+			logger.trace("About to load configuration from database");			
 		}
 					
 		if (configsMap.get(key) == null)
@@ -63,11 +59,6 @@ public class ConfigComponent
 	}
 
 	
-	public ConfigComponent(String tenantId) 
-	{
-		this.tenantlId = tenantId;
-	}
-	
 	/**
 	 * 
 	 * @param request
@@ -77,7 +68,8 @@ public class ConfigComponent
 	{
 		GetConfigurationResponse resp = new GetConfigurationResponse();
 		resp.setForRole(request.getForRole());
-//		ConfigDAO configDAO = new ConfigDAO();
+		
+		ConfigDAO configDAO = applicationContext.getBean(ConfigDAO.class,request);
 		
 		try 
 		{
@@ -122,11 +114,12 @@ public class ConfigComponent
 	}
 	
 	
-	private synchronized static void loadConfigs(boolean isLatestUpdateRequired)
+	private synchronized void loadConfigs(boolean isLatestUpdateRequired)
 	{
 		try
 		{
 //			ConfigDAO configDAO = new ConfigDAO();
+			ConfigDAO configDAO = applicationContext.getBean(ConfigDAO.class,tenantId);
 			configsMap = configDAO.getConfigsByRole(null);			
 		}		 
 		catch(Exception e)
@@ -135,11 +128,11 @@ public class ConfigComponent
 		}
 	}
 	
-	public static String getUserTempFilePath(String type, String additionalFolderId) 
+	public String getUserTempFilePath(String type, String additionalFolderId) 
 	{
-		String basePath = ConfigComponent.getConfig(ConfigId.TEMP_FILE_PATH);
+		String basePath = getConfig(ConfigId.TEMP_FILE_PATH);
 		basePath = StringUtils.removeEnd(basePath, "\\");
-		String dirPath = ConfigComponent.getConfig(ConfigId.TEMP_FILE_PATH)+"\\"+type+"\\";
+		String dirPath = getConfig(ConfigId.TEMP_FILE_PATH)+"\\"+type+"\\";
 		if (StringUtils.isNotBlank(additionalFolderId))
 			dirPath = dirPath + additionalFolderId+"\\";
 		boolean dirExits = new File(dirPath).mkdirs();

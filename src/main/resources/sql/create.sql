@@ -239,9 +239,26 @@ CREATE TABLE `event_schedule` (
   `event_status` varchar(100) DEFAULT 'NOT_STARTED',
   `event_description` mediumtext,
   `updated_by` varchar(100) DEFAULT NULL,
-  `last_updated_on` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `event_session_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`event_schedule_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `event_sessions`
+--
+
+DROP TABLE IF EXISTS `event_sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_sessions` (
+  `event_sessions_id` varchar(255) NOT NULL,
+  `user_record_id` varchar(100) NOT NULL,
+  `joining_datetime` datetime DEFAULT CURRENT_TIMESTAMP,
+  `leaving_datetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`event_sessions_id`,`user_record_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -399,7 +416,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`user_record_id`),
   UNIQUE KEY `id_UNIQUE` (`user_record_id`),
   UNIQUE KEY `userid_UNIQUE` (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -411,4 +428,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-26  7:43:31
+-- Dump completed on 2017-01-14 18:47:38

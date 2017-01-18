@@ -9,6 +9,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.classroom.ClassroomComponent;
 import com.taksila.veda.db.dao.EventScheduleDAO;
@@ -38,18 +42,23 @@ import com.taksila.veda.utils.CommonUtils;
 import com.taksila.veda.utils.ValidationUtils;
 
 
+
+@Component
+@Scope(value="prototype")
 public class EventScheduleMgmtComponent 
 {	
-	private String schoolId =null;	
+	@Autowired
+	ApplicationContext applicationContext;
+	
 	private EventScheduleDAO eventScheduleDAO = null;
 	private ClassroomComponent classroomComp = null;
 	static Logger logger = LogManager.getLogger(EventScheduleMgmtComponent.class.getName());
 	
 	public EventScheduleMgmtComponent(String tenantId) 
 	{
-		this.schoolId = tenantId;
-		this.eventScheduleDAO = new EventScheduleDAO(tenantId);
-		this.classroomComp = new ClassroomComponent(tenantId);	
+		this.eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		this.classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);	
+		
 	}
 			
 	

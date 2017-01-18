@@ -7,6 +7,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.dao.ClassroomDAO;
 import com.taksila.veda.db.dao.EnrollmentDAO;
@@ -31,9 +35,14 @@ import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.utils.CommonUtils;
 
 
+
+@Component
+@Scope(value="prototype")
 public class EnrollmentComponent 
 {	
-	private String schoolId =null;	
+	@Autowired
+	ApplicationContext applicationContext;
+			
 	private EnrollmentDAO enrollmentDAO = null;
 	private UsersDAO usersDAO = null;
 	private ClassroomDAO classroomDAO = null;
@@ -41,10 +50,9 @@ public class EnrollmentComponent
 	
 	public EnrollmentComponent(String tenantId) 
 	{
-		this.schoolId = tenantId;
-		this.enrollmentDAO = new EnrollmentDAO(this.schoolId);
-		this.classroomDAO = new ClassroomDAO(schoolId);
-		this.usersDAO = new UsersDAO(this.schoolId);
+		this.enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+		this.classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);	
+		this.usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 	}
 			
 	

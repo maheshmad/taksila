@@ -21,9 +21,13 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.config.ConfigComponent;
+import com.taksila.veda.config.TenantConfigManager;
 import com.taksila.veda.course.TopicComponent;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.course.v1_0.GetTopicRequest;
@@ -36,11 +40,18 @@ import com.taksila.veda.utils.CommonUtils;
  */
 @WebServlet(name="SlidesPPTXUploadServlet", urlPatterns={"/uploadslides"}, asyncSupported=true)
 @MultipartConfig
+@Component
 public class SlidesPPTXUploadServlet extends HttpServlet 
 {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LogManager.getLogger(SlidesPPTXUploadServlet.class.getName());   
-    /**
+    
+	@Autowired
+	ApplicationContext applicationContext;
+	@Autowired
+	TenantConfigManager tenantConfigManager;
+	
+	/**
      * @see HttpServlet#HttpServlet()
      */
     public SlidesPPTXUploadServlet() 
@@ -55,12 +66,15 @@ public class SlidesPPTXUploadServlet extends HttpServlet
     {
         System.out.println("inside slides upload servlet");
         response.setContentType("application/json");        
-                   
+        
+        final String tenantId = ServletUtils.getSubDomain(request.getRequestURL().toString());
+        ConfigComponent tenantConfig = tenantConfigManager.getTenantConfig(tenantId);
+        		
         UploadFileResponse fileUploadResp = new UploadFileResponse();
         OutputStream out = null;
         InputStream filecontent = null;
         final PrintWriter writer = response.getWriter();
-        final String tenantId = ServletUtils.getSubDomain(request.getRequestURL().toString());
+        
     	TopicComponent topicComp = new TopicComponent(tenantId);
 
         try 
@@ -69,7 +83,7 @@ public class SlidesPPTXUploadServlet extends HttpServlet
         	final Part filePart = request.getPart("slidecontent");
             final String fileName = System.currentTimeMillis()+ServletUtils.getFileName(filePart);           
         	String fileExtension = FilenameUtils.getExtension(fileName);
-        	final String path = ConfigComponent.getUserTempFilePath("slides",topicid);
+        	final String path = tenantConfig.getUserTempFilePath("slides",topicid);
         	/*
         	 * validation 
         	 */

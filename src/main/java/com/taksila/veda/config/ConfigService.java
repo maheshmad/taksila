@@ -26,6 +26,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
@@ -42,10 +45,14 @@ import com.taksila.veda.utils.CommonUtils;
 
 @Component
 @Path("/config")
+@Lazy(value = true)
 public class ConfigService 
 {
 	static Logger logger = LogManager.getLogger(ConfigService.class.getName());	
 	Executor executor;	
+	
+	@Autowired
+	ApplicationContext applicationContext;
 	
 	public ConfigService() 
 	{
@@ -151,7 +158,7 @@ public class ConfigService
 			public void run() 
 			{			
 				String tenantId = ServletUtils.getSubDomain(uri);
-				ConfigComponent configComp = new ConfigComponent(tenantId);
+				ConfigComponent configComp = applicationContext.getBean(ConfigComponent.class,tenantId);
 				GetConfigurationResponse configResp = null;
 				try 
 				{
@@ -193,7 +200,7 @@ public class ConfigService
 			{			
 				Map<String,String> configVals = new HashMap<String,String>();
 				String tenantId = ServletUtils.getSubDomain(uri);
-				ConfigComponent configComp = new ConfigComponent(tenantId);
+				ConfigComponent configComp = applicationContext.getBean(ConfigComponent.class,tenantId);
 				GetConfigurationResponse configResp = null;
 				String keyvaljson = "{";
 				try 

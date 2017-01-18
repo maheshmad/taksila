@@ -4,6 +4,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.dao.ChapterDAO;
 import com.taksila.veda.db.dao.TopicDAO;
@@ -22,19 +26,21 @@ import com.taksila.veda.model.api.course.v1_0.UpdateChapterRequest;
 import com.taksila.veda.model.api.course.v1_0.UpdateChapterResponse;
 import com.taksila.veda.utils.CommonUtils;
 
-
+@Component
+@Scope(value="prototype")
 public class ChapterComponent 
 {	
-	private String schoolId =null;	
+	@Autowired
+	ApplicationContext applicationContext;
+	
 	private ChapterDAO chapterDAO = null;
 	private TopicDAO topicDAO = null;
 	static Logger logger = LogManager.getLogger(ChapterComponent.class.getName());
 	
 	public ChapterComponent(String tenantId) 
 	{
-		this.schoolId = tenantId;
-		this.chapterDAO = new ChapterDAO(this.schoolId);
-		this.topicDAO = new TopicDAO(this.schoolId);
+		this.chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
+		this.topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);	
 	}
 			
 	
