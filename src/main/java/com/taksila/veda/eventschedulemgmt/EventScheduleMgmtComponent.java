@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -50,15 +51,12 @@ public class EventScheduleMgmtComponent
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	private EventScheduleDAO eventScheduleDAO = null;
-	private ClassroomComponent classroomComp = null;
 	static Logger logger = LogManager.getLogger(EventScheduleMgmtComponent.class.getName());
+	private String tenantId;
 	
-	public EventScheduleMgmtComponent(String tenantId) 
+	public EventScheduleMgmtComponent(@Value("tenantId") String tenantId) 
 	{
-		this.eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
-		this.classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);	
-		
+		this.tenantId = tenantId;		
 	}
 			
 	
@@ -69,6 +67,8 @@ public class EventScheduleMgmtComponent
 	 */
 	public SearchEventScheduleResponse searchEventSchedule(SearchEventScheduleRequest req)
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		
 		SearchEventScheduleResponse resp = new SearchEventScheduleResponse();
 		List<EventSchedule> eventScheduleSearchHits = new ArrayList<EventSchedule>();
 		try 
@@ -132,6 +132,7 @@ public class EventScheduleMgmtComponent
 	 */
 	public GetEventScheduleResponse getEventSchedule(GetEventScheduleRequest req)
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
 		GetEventScheduleResponse resp = new GetEventScheduleResponse();
 		try 
 		{
@@ -163,6 +164,7 @@ public class EventScheduleMgmtComponent
 	 */
 	public CreateEventScheduleResponse createNewEventSchedule(CreateEventScheduleRequest req)
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
 		CreateEventScheduleResponse resp = new CreateEventScheduleResponse();
 		EventSchedule eventScheudle = req.getEventSchedule();
 		try 
@@ -211,6 +213,9 @@ public class EventScheduleMgmtComponent
 	 */
 	public UpdateEventScheduleResponse updateEventSchedule(UpdateEventScheduleRequest req)
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		applicationContext.getBean(ClassroomComponent.class,tenantId);	
+		
 		UpdateEventScheduleResponse resp = new UpdateEventScheduleResponse();
 		EventSchedule eventScheudle = req.getEventSchedule();
 		try 
@@ -258,6 +263,9 @@ public class EventScheduleMgmtComponent
 	 */
 	public UpdateEventScheduleSessionIdResponse updateEventScheduleSessionId(UpdateEventScheduleSessionIdRequest req)
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		applicationContext.getBean(ClassroomComponent.class,tenantId);	
+		
 		UpdateEventScheduleSessionIdResponse resp = new UpdateEventScheduleSessionIdResponse();
 		try 
 		{									
@@ -313,6 +321,9 @@ public class EventScheduleMgmtComponent
 	 */
 	public DeleteEventScheduleResponse deleteEventSchedule(DeleteEventScheduleRequest req)
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		applicationContext.getBean(ClassroomComponent.class,tenantId);	
+		
 		DeleteEventScheduleResponse resp = new DeleteEventScheduleResponse();
 		try 
 		{
@@ -348,13 +359,15 @@ public class EventScheduleMgmtComponent
 	 */
 	public UpdateEventScheduleResponse updateEventSchedule(MultivaluedMap<String, String> formParams, String id, String updatedByUser) 
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		
 		UpdateEventScheduleResponse resp = new UpdateEventScheduleResponse();
 		try 
 		{
 			/*
 			 * validate
 			 */
-			EventSchedule currentEventSchedule = this.eventScheduleDAO.getEventScheduleById(id);
+			EventSchedule currentEventSchedule = eventScheduleDAO.getEventScheduleById(id);
 			if (currentEventSchedule == null)
 			{
 				resp.setErrorInfo(CommonUtils.buildErrorInfo("id", "Event was not found! Please check your input!"));
@@ -386,6 +399,8 @@ public class EventScheduleMgmtComponent
 	 */
 	public void mapFormFields(MultivaluedMap<String, String> formParams, EventSchedule eventSchedule) 
 	{
+		applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		applicationContext.getBean(ClassroomComponent.class,tenantId);	
 		
 		for (String key: formParams.keySet())
 		{
@@ -528,21 +543,24 @@ public class EventScheduleMgmtComponent
 	
 	public Err isValidEventRecordId(String val, boolean checkMandatory)
 	{
+		ClassroomComponent classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);	
 		
 		if (checkMandatory && StringUtils.isBlank(val)) return CommonUtils.buildErr("eventTitle", "is missing, Please provide a valid value");
 		
-		return this.classroomComp.checkClassroomidExists(val);
+		return classroomComp.checkClassroomidExists(val);
 		
 		
 	}
 	
 	public Err isValidId(String val, boolean checkMandatory)
 	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		
 		if (checkMandatory && StringUtils.isBlank(val)) return CommonUtils.buildErr("id", "is missing, Please provide a valid value");
 		
 		try 
 		{
-			if (this.eventScheduleDAO.getEventScheduleById(val) == null)
+			if (eventScheduleDAO.getEventScheduleById(val) == null)
 			{
 				return CommonUtils.buildErr("id", "Did not find any schedule with id = "+val);				
 			}

@@ -22,6 +22,8 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.course.v1_0.Course;
@@ -41,7 +43,9 @@ import com.taksila.veda.utils.CommonUtils;
 public class CourseService 
 {
 	static Logger logger = LogManager.getLogger(CourseService.class.getName());	
-		
+	
+	@Autowired
+	ApplicationContext applicationContext;
 	/**
 	 * 
 	 * @param request
@@ -78,8 +82,8 @@ public class CourseService
 			CreateNewCourseRequest req = new CreateNewCourseRequest();
 			req.setNewCourse(course);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			CourseComponent courseComp = new CourseComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			CourseComponent courseComp = applicationContext.getBean(CourseComponent.class,tenantId);
 			operResp = courseComp.createNewCourse(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -116,8 +120,8 @@ public class CourseService
 			GetCourseInfoRequest req = new GetCourseInfoRequest();
 			req.setId(courseid.trim());;
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			CourseComponent courseComp = new CourseComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			CourseComponent courseComp = applicationContext.getBean(CourseComponent.class,tenantId);
 			operResp = courseComp.getCourse(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -173,8 +177,8 @@ public class CourseService
 			UpdateCourseRequest req = new UpdateCourseRequest();
 			req.setCourse(course);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			CourseComponent courseComp = new CourseComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			CourseComponent courseComp = applicationContext.getBean(CourseComponent.class,tenantId);
 			operResp = courseComp.updateCourse(req);
 			operResp.setSuccess(true);
 		}
@@ -209,8 +213,8 @@ public class CourseService
 		{
 			logger.trace("About to delete course record = "+courseid);						
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			CourseComponent courseComp = new CourseComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			CourseComponent courseComp = applicationContext.getBean(CourseComponent.class,tenantId);
 			DeleteCourseRequest req = new DeleteCourseRequest();
 			req.setId(courseid);
 			operResp = courseComp.deleteCourse(req);
@@ -255,8 +259,8 @@ public class CourseService
 			req.setQuery(name);
 			req.setRecordType("COURSE");
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			CourseComponent courseComp = new CourseComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			CourseComponent courseComp = applicationContext.getBean(CourseComponent.class,tenantId);
 			searchResp = courseComp.searchCourses(req);
 		
 		} 

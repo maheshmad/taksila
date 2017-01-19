@@ -22,6 +22,8 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.course.v1_0.CreateTopicRequest;
@@ -41,7 +43,9 @@ import com.taksila.veda.utils.CommonUtils;
 public class TopicService 
 {
 	static Logger logger = LogManager.getLogger(TopicService.class.getName());	
-		
+	
+	@Autowired
+	ApplicationContext applicationContext;
 	/**
 	 * 
 	 * @param request
@@ -80,8 +84,8 @@ public class TopicService
 			CreateTopicRequest req = new CreateTopicRequest();
 			req.setTopic(topic);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			TopicComponent topicComp = new TopicComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			TopicComponent topicComp = applicationContext.getBean(TopicComponent.class,tenantId);
 			operResp = topicComp.createNewTopic(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -118,8 +122,8 @@ public class TopicService
 			GetTopicRequest req = new GetTopicRequest();
 			req.setId(topicid);;
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			TopicComponent topicComp = new TopicComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			TopicComponent topicComp = applicationContext.getBean(TopicComponent.class,tenantId);
 			operResp = topicComp.getTopic(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -175,8 +179,8 @@ public class TopicService
 			UpdateTopicRequest req = new UpdateTopicRequest();
 			req.setTopic(topic);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			TopicComponent topicComp = new TopicComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			TopicComponent topicComp = applicationContext.getBean(TopicComponent.class,tenantId);
 			operResp = topicComp.updateTopic(req);
 			operResp.setSuccess(true);
 		}
@@ -211,8 +215,8 @@ public class TopicService
 		{
 			logger.trace("About to delete topic record = "+topicid);						
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			TopicComponent topicComp = new TopicComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			TopicComponent topicComp = applicationContext.getBean(TopicComponent.class,tenantId);
 			DeleteTopicRequest req = new DeleteTopicRequest();
 			req.setId(topicid);
 			operResp = topicComp.deleteTopic(req);
@@ -257,8 +261,8 @@ public class TopicService
 			req.setQuery(name);
 			req.setRecordType("TOPIC");
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			TopicComponent topicComp = new TopicComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			TopicComponent topicComp = applicationContext.getBean(TopicComponent.class,tenantId);
 			searchResp = topicComp.searchTopic(req);
 		
 		} 

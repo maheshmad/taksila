@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,12 +35,12 @@ public class TopicComponent
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	private TopicDAO topicDAO = null;
 	static Logger logger = LogManager.getLogger(TopicComponent.class.getName());
+	private String tenantId;
 	
-	public TopicComponent(String tenantId) 
+	public TopicComponent(@Value("tenantId") String tenantId) 
 	{
-		this.topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);		
+		this.tenantId = tenantId;
 	}
 	
 	/**
@@ -49,6 +50,8 @@ public class TopicComponent
 	 */
 	public SearchTopicsResponse searchTopic(SearchTopicsRequest req)
 	{
+		TopicDAO topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);		
+
 		SearchTopicsResponse resp = new SearchTopicsResponse();
 		try 
 		{
@@ -87,6 +90,7 @@ public class TopicComponent
 	 */
 	public GetTopicResponse getTopic(GetTopicRequest req)
 	{
+		TopicDAO topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);		
 		GetTopicResponse resp = new GetTopicResponse();
 		try 
 		{
@@ -117,6 +121,7 @@ public class TopicComponent
 	 */
 	public CreateTopicResponse createNewTopic(CreateTopicRequest req)
 	{
+		TopicDAO topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);		
 		CreateTopicResponse resp = new CreateTopicResponse();
 		try 
 		{
@@ -142,6 +147,7 @@ public class TopicComponent
 	 */
 	public UpdateTopicResponse updateTopic(UpdateTopicRequest req)
 	{
+		TopicDAO topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);		
 		UpdateTopicResponse resp = new UpdateTopicResponse();
 		try 
 		{
@@ -176,6 +182,7 @@ public class TopicComponent
 	 */
 	public DeleteTopicResponse deleteTopic(DeleteTopicRequest req)
 	{
+		TopicDAO topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);		
 		DeleteTopicResponse resp = new DeleteTopicResponse();
 		try 
 		{

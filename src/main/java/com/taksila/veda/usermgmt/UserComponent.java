@@ -14,6 +14,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -53,16 +54,13 @@ public class UserComponent
 	ApplicationContext applicationContext;
 	
 	static Logger logger = LogManager.getLogger(UserComponent.class.getName());	
-	private UsersDAO usersDAO = null;
-	private UserImagesDAO userImagesDAO = null;
 
 	private String tenantId;
 	
-	public UserComponent(String tenantId) 
+	public UserComponent(@Value("tenantId") String tenantId) 
 	{
 		this.tenantId = tenantId;
-		this.usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
-		this.userImagesDAO = applicationContext.getBean(UserImagesDAO.class,tenantId);	
+		
 	}
 	/**
 	 * 
@@ -72,6 +70,7 @@ public class UserComponent
 	public SearchUserResponse searchUsers(SearchUserRequest req)
 	{
 		SearchUserResponse resp = new SearchUserResponse();
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
 			List<User> userSearchHits = usersDAO.searchUsers(req.getQuery());
@@ -112,6 +111,7 @@ public class UserComponent
 	public GetUserResponse getUser(int id)
 	{
 		GetUserResponse resp = new GetUserResponse();
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
 			User user = usersDAO.getUserById(id);
@@ -150,6 +150,7 @@ public class UserComponent
 	public GetUserResponse getUser(String userid)
 	{
 		GetUserResponse resp = new GetUserResponse();
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
 			User user = usersDAO.getUserByUserId(userid);
@@ -222,6 +223,7 @@ public class UserComponent
 	public CreateNewUserResponse createNewUser(CreateNewUserRequest req)
 	{
 		CreateNewUserResponse resp = new CreateNewUserResponse();
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
 			/*
@@ -275,6 +277,7 @@ public class UserComponent
 	public UpdateUserResponse updateUser(UpdateUserRequest req)
 	{		
 		UpdateUserResponse resp = new UpdateUserResponse();
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
 			//TODO validation
@@ -356,6 +359,7 @@ public class UserComponent
 	{
 		logger.trace("++++++++  ABOUT to insert image into Users id= "+userId);
 		UpdateUserResponse resp = new UpdateUserResponse();
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
 			//TODO validation
@@ -391,7 +395,8 @@ public class UserComponent
 	 */
 	public ByteArrayOutputStream getUserImage(int userId,double scale) throws Exception
 	{
-		logger.trace("++++++++  ABOUT to getUserImage image = "+userId);				
+		logger.trace("++++++++  ABOUT to getUserImage image = "+userId);	
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 			//TODO validation			
 		return usersDAO.readUserImage(userId, scale);					
 		
@@ -406,6 +411,7 @@ public class UserComponent
 	public DeleteUserResponse deleteUser(DeleteUserRequest req)
 	{
 		DeleteUserResponse resp = new DeleteUserResponse();
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
 			//TODO validation
@@ -439,7 +445,8 @@ public class UserComponent
 	 */
 	public ByteArrayOutputStream getImage(String imageid, double scale) throws Exception 
 	{
-		return this.userImagesDAO.readUserImageContent(imageid,scale);
+		UserImagesDAO userImagesDAO = applicationContext.getBean(UserImagesDAO.class,tenantId);	
+		return userImagesDAO.readUserImageContent(imageid,scale);
 	}
 	
 	
@@ -577,6 +584,7 @@ public class UserComponent
 	 */
 	public UserImageInfo processUserImageFile(String userid,String fileId) throws Exception 
 	{		
+		UserImagesDAO userImagesDAO = applicationContext.getBean(UserImagesDAO.class,tenantId);	
 		GetUserResponse userResp = this.getUser(userid);		
 		if (userResp == null || userResp.getUser() == null)
 			throw new Exception("Invalid user");
@@ -590,7 +598,7 @@ public class UserComponent
 		searchUserImage.setUserImageType(UserImageType.PROFILE_IMAGE);
 		searchUserImage.setUserId(user.getUserId());
 		
-		List<UserImageInfo> userImages = this.userImagesDAO.search(searchUserImage);		
+		List<UserImageInfo> userImages = userImagesDAO.search(searchUserImage);		
 		UserImageInfo userImageInfo = null;
 		if (userImages != null && !userImages.isEmpty())
 		{
@@ -610,7 +618,7 @@ public class UserComponent
 		File imageFile = new File(getUserTempFilePath(user.getUserId()) +"\\"+ fileId);
 		InputStream imgis =  new FileInputStream(imageFile);
 		InputStream imgisthumb =  new FileInputStream(imageFile);
-		UserImageInfo uimgInfo = this.userImagesDAO.insertUserImageInfo(userImageInfo, imgis, imgisthumb);
+		UserImageInfo uimgInfo = userImagesDAO.insertUserImageInfo(userImageInfo, imgis, imgisthumb);
 		
 		FileUtils.deleteQuietly(imageFile);
 		
@@ -619,11 +627,13 @@ public class UserComponent
 	
 	public UserImageInfo getUserImageInfo(String imageid) throws Exception 
 	{		
-		return this.userImagesDAO.getUserImageInfoById(imageid);
+		UserImagesDAO userImagesDAO = applicationContext.getBean(UserImagesDAO.class,tenantId);	
+		return userImagesDAO.getUserImageInfoById(imageid);
 	}
 	
 	public List<UserImageInfo> getUserImageInfoAll(String userid, UserImageType imgType) throws Exception 
 	{				
+		UserImagesDAO userImagesDAO = applicationContext.getBean(UserImagesDAO.class,tenantId);	
 		UserImageInfo searchUserImage = new UserImageInfo();
 		searchUserImage.setUserId(userid);
 		searchUserImage.setUserImageType(imgType);

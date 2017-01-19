@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,15 +35,13 @@ public class CourseComponent
 {	
 	@Autowired
 	ApplicationContext applicationContext;
-	
-	private CoursesDAO coursesDAO = null;
-	private ChapterDAO chapterDAO = null;
+
 	static Logger logger = LogManager.getLogger(CourseComponent.class.getName());
+	private String tenantId;
 	
-	public CourseComponent(String tenantId) 
+	public CourseComponent(@Value("tenantId") String tenantId) 
 	{
-		this.chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
-		this.coursesDAO = applicationContext.getBean(CoursesDAO.class,tenantId);	
+		this.tenantId = tenantId;	
 	}
 	
 	/**
@@ -52,6 +51,8 @@ public class CourseComponent
 	 */
 	public SearchCourseResponse searchCourses(SearchCourseRequest req)
 	{
+		CoursesDAO coursesDAO = applicationContext.getBean(CoursesDAO.class,tenantId);	
+		
 		SearchCourseResponse resp = new SearchCourseResponse();
 		try 
 		{
@@ -90,6 +91,9 @@ public class CourseComponent
 	 */
 	public GetCourseInfoResponse getCourse(GetCourseInfoRequest req)
 	{
+		ChapterDAO chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
+		CoursesDAO coursesDAO = applicationContext.getBean(CoursesDAO.class,tenantId);	
+		
 		GetCourseInfoResponse resp = new GetCourseInfoResponse();
 		try 
 		{
@@ -104,7 +108,7 @@ public class CourseComponent
 				/*
 				 * get chapters for the course
 				 */
-				course.getChapters().addAll(this.chapterDAO.searchChaptersByCourseId(req.getId()));
+				course.getChapters().addAll(chapterDAO.searchChaptersByCourseId(req.getId()));
 				resp.setCourse(course);
 			}					
 
@@ -124,6 +128,8 @@ public class CourseComponent
 	 */
 	public CreateNewCourseResponse createNewCourse(CreateNewCourseRequest req)
 	{
+		CoursesDAO coursesDAO = applicationContext.getBean(CoursesDAO.class,tenantId);	
+		
 		CreateNewCourseResponse resp = new CreateNewCourseResponse();
 		try 
 		{
@@ -149,6 +155,8 @@ public class CourseComponent
 	 */
 	public UpdateCourseResponse updateCourse(UpdateCourseRequest req)
 	{
+		CoursesDAO coursesDAO = applicationContext.getBean(CoursesDAO.class,tenantId);	
+		
 		UpdateCourseResponse resp = new UpdateCourseResponse();
 		try 
 		{
@@ -182,6 +190,8 @@ public class CourseComponent
 	 */
 	public DeleteCourseResponse deleteCourse(DeleteCourseRequest req)
 	{
+		CoursesDAO coursesDAO = applicationContext.getBean(CoursesDAO.class,tenantId);	
+		
 		DeleteCourseResponse resp = new DeleteCourseResponse();
 		try 
 		{

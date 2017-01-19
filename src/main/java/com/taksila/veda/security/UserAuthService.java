@@ -24,9 +24,12 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
+import com.taksila.veda.db.dao.UserSessionDAO;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.security.v1_0.ResetPasswordResponse;
@@ -41,7 +44,10 @@ public class UserAuthService
 	static Logger logger = LogManager.getLogger(UserAuthService.class.getName());
 	public static final String USER_AUTH_SESSION_COOKIE_NAME = "authsessionid";
 	Client client = ClientBuilder.newClient();   
-		
+	
+	@Autowired
+	ApplicationContext applicationContext;
+	
 	/*
 	 * Login using local LDAP without oauth
 	 */
@@ -62,7 +68,7 @@ public class UserAuthService
 			/*
 			 * get user info
 			 */			
-			UserAuthComponent userAuthComponent = new UserAuthComponent(tenantId);
+			UserAuthComponent userAuthComponent = applicationContext.getBean(UserAuthComponent.class,tenantId);
 			UserSession userSession  = this.buildUserSession(userid, session.getId(), request);			
 			loginResp = userAuthComponent.authenticate(userid,password,userSession);
 			logger.trace(CommonUtils.toJson(loginResp));
@@ -116,7 +122,7 @@ public class UserAuthService
 			/*
 			 * get user info
 			 */			
-			UserAuthComponent userAuthComponent = new UserAuthComponent(tenantId);
+			UserAuthComponent userAuthComponent = applicationContext.getBean(UserAuthComponent.class,tenantId);
 			chgPswdResp = userAuthComponent.changePassword(authSessionToken, newpassword, confirmpassword);
 			logger.trace(CommonUtils.toJson(chgPswdResp));	
 			chgPswdResp.setSuccess(true);
@@ -157,7 +163,7 @@ public class UserAuthService
 			/*
 			 * get user info
 			 */			
-			UserAuthComponent userAuthComponent = new UserAuthComponent(tenantId);
+			UserAuthComponent userAuthComponent = applicationContext.getBean(UserAuthComponent.class,tenantId);
 			resetPswdResp = userAuthComponent.emailPasswordResetLink(emailid);
 //			logger.trace(CommonUtils.toJson(resetPswdResp));	
 			resetPswdResp.setSuccess(true);			
@@ -192,7 +198,7 @@ public class UserAuthService
 		/*
 		 * get user info
 		 */
-		UserAuthComponent userAuthComponent = new UserAuthComponent(tenantId);
+		UserAuthComponent userAuthComponent = applicationContext.getBean(UserAuthComponent.class,tenantId);
 		UserLoginResponse userInfoResp = userAuthComponent.getLoggedInUser(authSessionId);		
 		
 		if (userInfoResp.getErrorInfo() != null || userInfoResp.getSessionInfo() == null)
@@ -246,7 +252,7 @@ public class UserAuthService
 	    		/*
 	    		 * get user info
 	    		 */
-	    		UserAuthComponent userAuthComponent = new UserAuthComponent(tenantId);    		
+	    		UserAuthComponent userAuthComponent = applicationContext.getBean(UserAuthComponent.class,tenantId);  		
 	    		boolean logoutResp = userAuthComponent.logout(authSessionId);
 	    		if (logoutResp)
 	    		{

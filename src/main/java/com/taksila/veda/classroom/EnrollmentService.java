@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.classroom.v1_0.CreateEnrollmentRequest;
@@ -43,7 +45,9 @@ import com.taksila.veda.utils.CommonUtils;
 public class EnrollmentService 
 {
 	static Logger logger = LogManager.getLogger(EnrollmentService.class.getName());	
-		
+	
+	@Autowired
+	ApplicationContext applicationContext;
 	/**
 	 * 	 
 	 */
@@ -57,7 +61,7 @@ public class EnrollmentService
     		@Suspended final AsyncResponse asyncResp) 
     {    	
 		String tenantId = ServletUtils.getSubDomain(uri);
-		EnrollmentComponent enrollmentComp = new EnrollmentComponent(tenantId);
+		EnrollmentComponent enrollmentComp = applicationContext.getBean(EnrollmentComponent.class,tenantId);
 		CreateEnrollmentResponse operResp = new CreateEnrollmentResponse();
 		
 		logger.trace("processing enrollment creation..");
@@ -108,8 +112,8 @@ public class EnrollmentService
 			GetEnrollmentRequest req = new GetEnrollmentRequest();
 			req.setId(enrollmentid);;
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			EnrollmentComponent enrollmentComp = applicationContext.getBean(EnrollmentComponent.class,tenantId);
 			operResp = enrollmentComp.getEnrollment(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -147,10 +151,10 @@ public class EnrollmentService
     		final MultivaluedMap<String, String> formParams,    		
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
-		String schoolId = ServletUtils.getSubDomain(uri);
-		EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
+		String tenantId = ServletUtils.getSubDomain(uri);
+		EnrollmentComponent enrollmentComp = applicationContext.getBean(EnrollmentComponent.class,tenantId);
 		UpdateEnrollmentResponse operResp = new UpdateEnrollmentResponse();		
-		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(schoolId, request);
+		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
 		try
 		{
 			logger.trace("About to update enrollment record = "+enrollmentid);
@@ -197,8 +201,8 @@ public class EnrollmentService
 		{
 			logger.trace("About to delete enrollment record = "+enrollmentid);						
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			EnrollmentComponent enrollmentComp = applicationContext.getBean(EnrollmentComponent.class,tenantId);
 			DeleteEnrollmentRequest req = new DeleteEnrollmentRequest();
 			req.setId(enrollmentid);
 			operResp = enrollmentComp.deleteEnrollment(req);
@@ -240,8 +244,8 @@ public class EnrollmentService
 		
 		SearchEnrollmentResponse searchResp = new SearchEnrollmentResponse();		
 		SearchEnrollmentRequest req = new SearchEnrollmentRequest();
-		String schoolId = ServletUtils.getSubDomain(uri);
-		EnrollmentComponent enrollmentComp = new EnrollmentComponent(schoolId);
+		String tenantId = ServletUtils.getSubDomain(uri);
+		EnrollmentComponent enrollmentComp = applicationContext.getBean(EnrollmentComponent.class,tenantId);
 		
 		try 
 		{

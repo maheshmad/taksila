@@ -7,8 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.dao.ConfigDAO;
@@ -21,6 +23,7 @@ import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.utils.CommonUtils;
 
 @Component
+@Scope(value="prototype")
 @Lazy(value = true)
 public class ConfigComponent 
 {	
@@ -30,10 +33,8 @@ public class ConfigComponent
 	
 	@Autowired
 	ApplicationContext applicationContext;
-	
-	ConfigDAO configDAO;
-		
-	public ConfigComponent(String tenantId) 
+			
+	public ConfigComponent(@Value("tenantId")  String tenantId) 
 	{
 		logger.trace("About to load configuration from database for tenantid = "+tenantId);		
 		this.tenantId = tenantId;
@@ -69,7 +70,7 @@ public class ConfigComponent
 		GetConfigurationResponse resp = new GetConfigurationResponse();
 		resp.setForRole(request.getForRole());
 		
-		ConfigDAO configDAO = applicationContext.getBean(ConfigDAO.class,request);
+		ConfigDAO configDAO = applicationContext.getBean(ConfigDAO.class,this.tenantId);
 		
 		try 
 		{
@@ -92,7 +93,7 @@ public class ConfigComponent
 	public UpdateConfigResponse updateConfig(UpdateConfigRequest request)
 	{
 		UpdateConfigResponse resp = new UpdateConfigResponse();
-//		ConfigDAO configDAO = new ConfigDAO();
+		ConfigDAO configDAO = applicationContext.getBean(ConfigDAO.class,this.tenantId);
 		
 		try 
 		{

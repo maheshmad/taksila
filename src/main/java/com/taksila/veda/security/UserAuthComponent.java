@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -35,8 +36,9 @@ public class UserAuthComponent
 	
 	private String tenantId;
 	
-	public UserAuthComponent(String tenantId) 
+	public UserAuthComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace("building UserAuthComponent for tenantId = "+tenantId);
 		this.tenantId = tenantId;
 		
 	}

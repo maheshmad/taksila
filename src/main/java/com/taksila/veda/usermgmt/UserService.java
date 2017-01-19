@@ -27,6 +27,8 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
@@ -50,7 +52,10 @@ public class UserService
 {
 	static Logger logger = LogManager.getLogger(UserService.class.getName());	
 	Executor executor;
-
+	
+	@Autowired
+	ApplicationContext applicationContext;
+	
    public UserService() 
    {
       executor = Executors.newSingleThreadExecutor();
@@ -83,11 +88,11 @@ public class UserService
 		{
 			public void run() 
 			{	
-				String schoolId = ServletUtils.getSubDomain(uri);				
+				String tenantId = ServletUtils.getSubDomain(uri);				
 				CreateNewUserResponse operResp = new CreateNewUserResponse();
 				try 
 				{					
-					UserComponent userComp = new UserComponent(schoolId);					
+					UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 					operResp = userComp.createNewUser(formParams); 
 					if (operResp.getErrorInfo() == null)
 						operResp.setSuccess(true);
@@ -134,8 +139,8 @@ public class UserService
 				GetUserResponse operResp = new GetUserResponse();
 				try 
 				{
-					String schoolId = ServletUtils.getSubDomain(uri);
-					UserComponent userComp = new UserComponent(schoolId);
+					String tenantId = ServletUtils.getSubDomain(uri);
+					UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 					operResp = userComp.getUser(id); 			
 					operResp.setSuccess(true);
 				} 
@@ -182,8 +187,8 @@ public class UserService
 				ByteArrayOutputStream operResp = null;
 				try 
 				{										
-					String schoolId = ServletUtils.getSubDomain(uri);
-					UserComponent userComp = new UserComponent(schoolId);
+					String tenantId = ServletUtils.getSubDomain(uri);
+					UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 					if (StringUtils.equals(scale, "thumb"))
 						operResp = userComp.getImage(imageid, 0.5);
 					else
@@ -239,8 +244,8 @@ public class UserService
 			public void run() 
 			{	
 				UpdateUserResponse operResp = new UpdateUserResponse();
-				String schoolId = ServletUtils.getSubDomain(uri);
-				UserComponent userComp = new UserComponent(schoolId);
+				String tenantId = ServletUtils.getSubDomain(uri);
+				UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 				
 				try 
 				{											
@@ -288,8 +293,8 @@ public class UserService
 				{
 					logger.trace("About to delete user record = "+userid);						
 					
-					String schoolId = ServletUtils.getSubDomain(uri);
-					UserComponent userComp = new UserComponent(schoolId);
+					String tenantId = ServletUtils.getSubDomain(uri);
+					UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 					DeleteUserRequest req = new DeleteUserRequest();
 					req.setId(userid);
 					operResp = userComp.deleteUser(req);
@@ -345,8 +350,8 @@ public class UserService
 					req.setQuery(name == null ? "": name);
 					req.setRecordType("USERS");
 					
-					String schoolId = ServletUtils.getSubDomain(uri);
-					UserComponent userComp = new UserComponent(schoolId);
+					String tenantId = ServletUtils.getSubDomain(uri);
+					UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 					searchResp = userComp.searchUsers(req);
 					searchResp.setStatus(StatusType.SUCCESS);;
 				} 
@@ -380,8 +385,9 @@ public class UserService
 			@Suspended final AsyncResponse asyncResp)
 	{    						
 		logger.trace("inside user allowed actions service");		
-		String schoolId = ServletUtils.getSubDomain(uri);
-		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
+		String tenantId = ServletUtils.getSubDomain(uri);
+		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
+
 		AllowedActionsResponse allowedActionsResp = new AllowedActionsResponse();
 		
 		try 

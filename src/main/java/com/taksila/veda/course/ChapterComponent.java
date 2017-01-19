@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,14 +34,12 @@ public class ChapterComponent
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	private ChapterDAO chapterDAO = null;
-	private TopicDAO topicDAO = null;
+	private String tenantId;
 	static Logger logger = LogManager.getLogger(ChapterComponent.class.getName());
 	
-	public ChapterComponent(String tenantId) 
+	public ChapterComponent(@Value("tenantId") String tenantId) 
 	{
-		this.chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
-		this.topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);	
+		this.tenantId = tenantId;	
 	}
 			
 	
@@ -51,6 +50,8 @@ public class ChapterComponent
 	 */
 	public SearchChaptersResponse searchChapter(SearchChaptersRequest req)
 	{
+		ChapterDAO chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
+		
 		SearchChaptersResponse resp = new SearchChaptersResponse();
 		try 
 		{
@@ -89,6 +90,10 @@ public class ChapterComponent
 	 */
 	public GetChapterResponse getChapter(GetChapterRequest req)
 	{
+		ChapterDAO chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
+		TopicDAO topicDAO = applicationContext.getBean(TopicDAO.class,tenantId);	
+
+		
 		GetChapterResponse resp = new GetChapterResponse();
 		try 
 		{
@@ -100,7 +105,7 @@ public class ChapterComponent
 			}
 			else
 			{
-				chapter.getTopics().addAll(this.topicDAO.searchTopicsByChapterid(req.getId()));
+				chapter.getTopics().addAll(topicDAO.searchTopicsByChapterid(req.getId()));
 				resp.setChapter(chapter);
 			}					
 
@@ -120,6 +125,8 @@ public class ChapterComponent
 	 */
 	public CreateChapterResponse createNewChapter(CreateChapterRequest req)
 	{
+		ChapterDAO chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
+		
 		CreateChapterResponse resp = new CreateChapterResponse();
 		try 
 		{							
@@ -143,6 +150,8 @@ public class ChapterComponent
 	 */
 	public UpdateChapterResponse updateChapter(UpdateChapterRequest req)
 	{
+		ChapterDAO chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
+		
 		UpdateChapterResponse resp = new UpdateChapterResponse();
 		try 
 		{
@@ -176,6 +185,8 @@ public class ChapterComponent
 	 */
 	public DeleteChapterResponse deleteChapter(DeleteChapterRequest req)
 	{
+		ChapterDAO chapterDAO = applicationContext.getBean(ChapterDAO.class,tenantId);	
+
 		DeleteChapterResponse resp = new DeleteChapterResponse();
 		try 
 		{

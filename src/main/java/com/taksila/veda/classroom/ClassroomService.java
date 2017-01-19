@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.classroom.v1_0.Classroom;
@@ -42,7 +44,9 @@ import com.taksila.veda.utils.CommonUtils;
 public class ClassroomService 
 {
 	static Logger logger = LogManager.getLogger(ClassroomService.class.getName());	
-		
+	
+	@Autowired
+	ApplicationContext applicationContext;
 	/**
 	 * 
 	 * @param request
@@ -81,8 +85,8 @@ public class ClassroomService
 			CreateClassroomRequest req = new CreateClassroomRequest();
 			req.setClassroom(classroom);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ClassroomComponent classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);
 			operResp = classroomComp.createNewClassroom(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -119,8 +123,8 @@ public class ClassroomService
 			GetClassroomRequest req = new GetClassroomRequest();
 			req.setId(classroomid);;
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ClassroomComponent classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);
 			operResp = classroomComp.getClassroom(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -178,8 +182,8 @@ public class ClassroomService
 			UpdateClassroomRequest req = new UpdateClassroomRequest();
 			req.setClassroom(classroom);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ClassroomComponent classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);
 			operResp = classroomComp.updateClassroom(req);
 			operResp.setSuccess(true);
 		}
@@ -214,8 +218,8 @@ public class ClassroomService
 		{
 			logger.trace("About to delete classroom record = "+classroomid);						
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ClassroomComponent classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);
 			DeleteClassroomRequest req = new DeleteClassroomRequest();
 			req.setId(classroomid);
 			operResp = classroomComp.deleteClassroom(req);
@@ -264,8 +268,8 @@ public class ClassroomService
 			req.setQuery(name);
 			req.setRecordType("CLASSROOM");
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ClassroomComponent classroomComp = new ClassroomComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ClassroomComponent classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);
 			searchResp = classroomComp.searchClassroom(req);
 		
 		} 

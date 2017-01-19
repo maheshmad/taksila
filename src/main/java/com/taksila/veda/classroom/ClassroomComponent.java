@@ -5,13 +5,12 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.taksila.veda.db.dao.ClassroomDAO;
-import com.taksila.veda.db.dao.EnrollmentDAO;
-import com.taksila.veda.db.eventsessions.EventSessionsRepository;
 import com.taksila.veda.model.api.base.v1_0.Err;
 import com.taksila.veda.model.api.base.v1_0.SearchHitRecord;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
@@ -35,14 +34,12 @@ public class ClassroomComponent
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	private EnrollmentDAO enrollmentDAO = null;
-	private ClassroomDAO classroomDAO = null;
+	private String tenantId;
 	static Logger logger = LogManager.getLogger(ClassroomComponent.class.getName());
 	
-	public ClassroomComponent(String tenantId) 
+	public ClassroomComponent(@Value("tenantId") String tenantId) 
 	{
-		this.enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
-		this.classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);	
+		this.tenantId = tenantId;	
 	}
 			
 	
@@ -54,6 +51,7 @@ public class ClassroomComponent
 	public SearchClassroomResponse searchClassroom(SearchClassroomRequest req)
 	{
 		SearchClassroomResponse resp = new SearchClassroomResponse();
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);
 		try 
 		{
 			List<Classroom> classroomSearchHits = classroomDAO.searchClassroomsByTitle(req.getQuery());
@@ -92,6 +90,7 @@ public class ClassroomComponent
 	public GetClassroomResponse getClassroom(GetClassroomRequest req)
 	{
 		GetClassroomResponse resp = new GetClassroomResponse();
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);
 		try 
 		{
 			Classroom classroom = classroomDAO.getClassroomById(req.getId());
@@ -123,6 +122,7 @@ public class ClassroomComponent
 	public CreateClassroomResponse createNewClassroom(CreateClassroomRequest req)
 	{
 		CreateClassroomResponse resp = new CreateClassroomResponse();
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);
 		try 
 		{							
 			Classroom course = classroomDAO.insertClassroom(req.getClassroom());
@@ -146,6 +146,7 @@ public class ClassroomComponent
 	public UpdateClassroomResponse updateClassroom(UpdateClassroomRequest req)
 	{
 		UpdateClassroomResponse resp = new UpdateClassroomResponse();
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);
 		try 
 		{
 			//TODO validation
@@ -179,6 +180,7 @@ public class ClassroomComponent
 	public DeleteClassroomResponse deleteClassroom(DeleteClassroomRequest req)
 	{
 		DeleteClassroomResponse resp = new DeleteClassroomResponse();
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);
 		try 
 		{
 			//TODO validation
@@ -215,6 +217,7 @@ public class ClassroomComponent
 	public Err checkClassroomidExists(String classroomid)
 	{		
 		Classroom classroom;
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);
 		try 
 		{
 			classroom = classroomDAO.getClassroomById(classroomid);				

@@ -23,8 +23,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
+import com.taksila.veda.classroom.EnrollmentComponent;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleResponse;
@@ -45,7 +48,9 @@ import com.taksila.veda.utils.CommonUtils;
 public class EventScheduleMgmtService 
 {
 	static Logger logger = LogManager.getLogger(EventScheduleMgmtService.class.getName());	
-		
+	
+	@Autowired
+	ApplicationContext applicationContext;
 	/**
 	 * 	 
 	 */
@@ -59,7 +64,7 @@ public class EventScheduleMgmtService
     		@Suspended final AsyncResponse asyncResp) 
     {    	
 		String tenantId = ServletUtils.getSubDomain(uri);
-		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(tenantId);
+		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
 		CreateEventScheduleResponse operResp = new CreateEventScheduleResponse();
 		
 		logger.trace("processing eventSchedule creation..");
@@ -103,7 +108,7 @@ public class EventScheduleMgmtService
     		@Suspended final AsyncResponse asyncResp) 
     {    	
 		String tenantId = ServletUtils.getSubDomain(uri);
-		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(tenantId);
+		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
 		UpdateEventScheduleSessionIdResponse operResp = new UpdateEventScheduleSessionIdResponse();
 		
 		logger.trace("processing updateSessionId ..");
@@ -156,8 +161,8 @@ public class EventScheduleMgmtService
 			GetEventScheduleRequest req = new GetEventScheduleRequest();
 			req.setId(eventScheduleid);;
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
 			operResp = eventScheduleComp.getEventSchedule(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -191,10 +196,10 @@ public class EventScheduleMgmtService
     		final MultivaluedMap<String, String> formParams,    		
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
-		String schoolId = ServletUtils.getSubDomain(uri);
-		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
+		String tenantId = ServletUtils.getSubDomain(uri);
+		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
 		UpdateEventScheduleResponse operResp = new UpdateEventScheduleResponse();		
-		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(schoolId, request);
+		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
 		try
 		{
 			logger.trace("About to update eventSchedule record = "+eventScheduleid);
@@ -236,8 +241,8 @@ public class EventScheduleMgmtService
 		{
 			logger.trace("About to delete eventSchedule record = "+eventScheduleid);						
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
 			DeleteEventScheduleRequest req = new DeleteEventScheduleRequest();
 			req.setId(eventScheduleid);
 			operResp = eventScheduleComp.deleteEventSchedule(req);
@@ -280,8 +285,8 @@ public class EventScheduleMgmtService
 		
 		SearchEventScheduleResponse searchResp = new SearchEventScheduleResponse();		
 		SearchEventScheduleRequest req = new SearchEventScheduleRequest();
-		String schoolId = ServletUtils.getSubDomain(uri);
-		EventScheduleMgmtComponent eventScheduleComp = new EventScheduleMgmtComponent(schoolId);
+		String tenantId = ServletUtils.getSubDomain(uri);
+		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
 		
 		try 
 		{

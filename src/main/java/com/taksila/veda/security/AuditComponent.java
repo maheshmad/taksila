@@ -2,9 +2,11 @@ package com.taksila.veda.security;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class AuditComponent 
 {
-	public AuditComponent(String tenantId)
+	public AuditComponent(@Value("tenantId") String tenantId)
 	{
 		
 	}

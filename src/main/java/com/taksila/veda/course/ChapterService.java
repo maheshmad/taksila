@@ -22,8 +22,11 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
+import com.taksila.veda.classroom.ClassroomComponent;
 import com.taksila.veda.model.api.course.v1_0.Chapter;
 import com.taksila.veda.model.api.course.v1_0.CreateChapterRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateChapterResponse;
@@ -41,7 +44,10 @@ import com.taksila.veda.utils.CommonUtils;
 public class ChapterService 
 {
 	static Logger logger = LogManager.getLogger(ChapterService.class.getName());	
-		
+	
+	@Autowired
+	ApplicationContext applicationContext;
+	
 	/**
 	 * 
 	 * @param request
@@ -80,8 +86,8 @@ public class ChapterService
 			CreateChapterRequest req = new CreateChapterRequest();
 			req.setChapter(chapter);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ChapterComponent chapterComp = new ChapterComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ChapterComponent chapterComp = applicationContext.getBean(ChapterComponent.class,tenantId);
 			operResp = chapterComp.createNewChapter(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -118,8 +124,8 @@ public class ChapterService
 			GetChapterRequest req = new GetChapterRequest();
 			req.setId(chapterid);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ChapterComponent chapterComp = new ChapterComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ChapterComponent chapterComp = applicationContext.getBean(ChapterComponent.class,tenantId);
 			operResp = chapterComp.getChapter(req); 			
 			operResp.setSuccess(true);
 		} 
@@ -175,8 +181,8 @@ public class ChapterService
 			UpdateChapterRequest req = new UpdateChapterRequest();
 			req.setChapter(chapter);
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ChapterComponent chapterComp = new ChapterComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ChapterComponent chapterComp = applicationContext.getBean(ChapterComponent.class,tenantId);
 			operResp = chapterComp.updateChapter(req);
 			operResp.setSuccess(true);
 		}
@@ -211,8 +217,8 @@ public class ChapterService
 		{
 			logger.trace("About to delete chapter record = "+chapterid);						
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ChapterComponent chapterComp = new ChapterComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ChapterComponent chapterComp = applicationContext.getBean(ChapterComponent.class,tenantId);
 			DeleteChapterRequest req = new DeleteChapterRequest();
 			req.setId(chapterid);
 			operResp = chapterComp.deleteChapter(req);
@@ -257,8 +263,8 @@ public class ChapterService
 			req.setQuery(name);
 			req.setRecordType("CHAPTER");
 			
-			String schoolId = ServletUtils.getSubDomain(uri);
-			ChapterComponent chapterComp = new ChapterComponent(schoolId);
+			String tenantId = ServletUtils.getSubDomain(uri);
+			ChapterComponent chapterComp = applicationContext.getBean(ChapterComponent.class,tenantId);
 			searchResp = chapterComp.searchChapter(req);
 		
 		} 

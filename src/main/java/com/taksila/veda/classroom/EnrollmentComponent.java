@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -42,17 +43,13 @@ public class EnrollmentComponent
 {	
 	@Autowired
 	ApplicationContext applicationContext;
-			
-	private EnrollmentDAO enrollmentDAO = null;
-	private UsersDAO usersDAO = null;
-	private ClassroomDAO classroomDAO = null;
+	
+	private String tenantId;
 	static Logger logger = LogManager.getLogger(EnrollmentComponent.class.getName());
 	
-	public EnrollmentComponent(String tenantId) 
+	public EnrollmentComponent(@Value("tenantId") String tenantId) 
 	{
-		this.enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
-		this.classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);	
-		this.usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
+		this.tenantId = tenantId;	
 	}
 			
 	
@@ -63,6 +60,9 @@ public class EnrollmentComponent
 	 */
 	public SearchEnrollmentResponse searchEnrollmentByClassroom(SearchEnrollmentRequest req)
 	{
+		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+		
+		
 		SearchEnrollmentResponse resp = new SearchEnrollmentResponse();
 		try 
 		{
@@ -111,6 +111,9 @@ public class EnrollmentComponent
 	 */
 	public SearchEnrollmentResponse searchEnrollmentByUserRecordid(SearchEnrollmentRequest req)
 	{
+		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+		
+		
 		SearchEnrollmentResponse resp = new SearchEnrollmentResponse();
 		try 
 		{
@@ -160,6 +163,9 @@ public class EnrollmentComponent
 	 */
 	public GetEnrollmentResponse getEnrollment(GetEnrollmentRequest req)
 	{
+		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+	
+		
 		GetEnrollmentResponse resp = new GetEnrollmentResponse();
 		try 
 		{
@@ -190,6 +196,8 @@ public class EnrollmentComponent
 	 */
 	public CreateEnrollmentResponse createNewEnrollment(CreateEnrollmentRequest req)
 	{
+		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+	
 		CreateEnrollmentResponse resp = new CreateEnrollmentResponse();
 		Enrollment enroll = req.getEnrollment();
 		try 
@@ -237,6 +245,8 @@ public class EnrollmentComponent
 	 */
 	public UpdateEnrollmentResponse updateEnrollment(UpdateEnrollmentRequest req)
 	{
+		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+		
 		UpdateEnrollmentResponse resp = new UpdateEnrollmentResponse();
 		Enrollment enroll = req.getEnrollment();
 		try 
@@ -281,6 +291,8 @@ public class EnrollmentComponent
 	 */
 	public DeleteEnrollmentResponse deleteEnrollment(DeleteEnrollmentRequest req)
 	{
+		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
+		
 		DeleteEnrollmentResponse resp = new DeleteEnrollmentResponse();
 		try 
 		{
@@ -316,12 +328,15 @@ public class EnrollmentComponent
 	
 	private ErrorInfo validate(Enrollment enroll) throws Exception
 	{
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);	
+		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);
+		
 		ErrorInfo errorInfo = new ErrorInfo();
 		if (StringUtils.isBlank(enroll.getUserRecordId()))
 			CommonUtils.buildErrorInfo(errorInfo, "userRecordId", "Please provide a valid user record id");
 		else
 		{
-			User user = this.usersDAO.getUserById(Integer.parseInt(enroll.getUserRecordId()));			
+			User user = usersDAO.getUserById(Integer.parseInt(enroll.getUserRecordId()));			
 			if (user == null)
 				CommonUtils.buildErrorInfo(errorInfo, "userId", "Student not found user id = "+enroll.getUserRecordId());
 		}
@@ -331,7 +346,7 @@ public class EnrollmentComponent
 			CommonUtils.buildErrorInfo(errorInfo, "classroomid", "Please provide a valid classroom id");
 		else
 		{
-			Classroom classroom = this.classroomDAO.getClassroomById(enroll.getClassroomid());				
+			Classroom classroom = classroomDAO.getClassroomById(enroll.getClassroomid());				
 			if (classroom == null)
 				CommonUtils.buildErrorInfo(errorInfo, "classroomid", "Classroom not found classroom id = "+enroll.getClassroomid());
 		}

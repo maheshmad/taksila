@@ -46,17 +46,17 @@ public class SlideComponent
 	Pptx2Image pptx2Image;
 	
 	static Logger logger = LogManager.getLogger(SlideComponent.class.getName());	
-	private SlidesDAO slideDAO = null;
-	
+	private String tenantId;
 	
 	public SlideComponent(@Value("tenantId") String tenantId) 
 	{
-		this.slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);		
+		this.tenantId = tenantId;		
 	}
 	
 	public BaseResponse generateImagesFromPptx(String topicid, String uploadedfileid)
 	{    						
 		logger.trace("inside pptx to image converter");
+		
 		BaseResponse bResp = new BaseResponse(); 
 		try 
 		{
@@ -90,6 +90,8 @@ public class SlideComponent
 	 */
 	public SearchSlidesResponse searchSlide(SearchSlidesRequest req)
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
+
 		SearchSlidesResponse resp = new SearchSlidesResponse();
 		try 
 		{
@@ -128,6 +130,7 @@ public class SlideComponent
 	 */
 	public SearchSlidesResponse getSlidesByTopicId(SearchSlidesRequest req)
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		SearchSlidesResponse resp = new SearchSlidesResponse();
 		try 
 		{
@@ -169,6 +172,7 @@ public class SlideComponent
 	 */
 	public GetSlideResponse getSlide(GetSlideRequest req)
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		GetSlideResponse resp = new GetSlideResponse();
 		try 
 		{
@@ -201,6 +205,7 @@ public class SlideComponent
 	 */
 	public GetSlideResponse getSlideByName(GetSlideRequest req)
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		GetSlideResponse resp = new GetSlideResponse();
 		try 
 		{
@@ -233,6 +238,7 @@ public class SlideComponent
 	 */
 	public CreateSlideResponse createNewSlide(CreateSlideRequest req)
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		CreateSlideResponse resp = new CreateSlideResponse();
 		try 
 		{
@@ -258,6 +264,7 @@ public class SlideComponent
 	 */
 	public UpdateSlideResponse updateSlide(UpdateSlideRequest req)
 	{		
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		UpdateSlideResponse resp = new UpdateSlideResponse();
 		try 
 		{
@@ -291,6 +298,7 @@ public class SlideComponent
 	 */
 	public UpdateSlideResponse updateSlideImage(String slideId,InputStream slideContentImageIs, String imageType, double scale)
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		logger.trace("++++++++  ABOUT to insert image into Slides id= "+slideId);
 		UpdateSlideResponse resp = new UpdateSlideResponse();
 		try 
@@ -328,6 +336,7 @@ public class SlideComponent
 	 */
 	public ByteArrayOutputStream getSlideImage(int slideId,double scale) throws Exception
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		logger.trace("++++++++  ABOUT to getSlideImage image = "+slideId);				
 			//TODO validation			
 		return slideDAO.readSlideImage(slideId, scale);					
@@ -342,6 +351,7 @@ public class SlideComponent
 	 */
 	public DeleteSlideResponse deleteSlide(DeleteSlideRequest req)
 	{
+		SlidesDAO slideDAO = applicationContext.getBean(SlidesDAO.class,tenantId);
 		DeleteSlideResponse resp = new DeleteSlideResponse();
 		try 
 		{
