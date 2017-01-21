@@ -73,7 +73,6 @@ public class ConfigService
 	@ManagedAsync
     public void post(@Context HttpServletRequest request,@Context HttpServletResponse response,    		
     		@Context final UriInfo uri,
-    		final MultivaluedMap<String, String> formParams,
     		@Suspended final AsyncResponse asyncResp) 
     {    	
 		executor.execute( new Runnable() 
@@ -84,6 +83,7 @@ public class ConfigService
 				
 				try 
 				{					
+					MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 					logger.trace("Inside /api/config POST" );
 					String tenantId = ServletUtils.getSubDomain(uri);
 					ConfigComponent configComp = new ConfigComponent(tenantId);					

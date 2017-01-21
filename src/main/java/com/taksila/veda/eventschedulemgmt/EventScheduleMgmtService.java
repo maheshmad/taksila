@@ -59,7 +59,6 @@ public class EventScheduleMgmtService
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@ManagedAsync
     public void post(@Context HttpServletRequest request,@Context HttpServletResponse response,
-    		final MultivaluedMap<String, String> formParams,    		
     		@Context UriInfo uri,	
     		@Suspended final AsyncResponse asyncResp) 
     {    	
@@ -70,6 +69,7 @@ public class EventScheduleMgmtService
 		logger.trace("processing eventSchedule creation..");
 		try 
 		{
+			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 			String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			
 			EventSchedule eventSchedule = new EventSchedule();
@@ -193,7 +193,6 @@ public class EventScheduleMgmtService
 	@Path("/{id}")
 	public void put(@Context HttpServletRequest request, @Context UriInfo uri,	
 			@PathParam("id") String eventScheduleid,
-    		final MultivaluedMap<String, String> formParams,    		
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
 		String tenantId = ServletUtils.getSubDomain(uri);
@@ -203,7 +202,7 @@ public class EventScheduleMgmtService
 		try
 		{
 			logger.trace("About to update eventSchedule record = "+eventScheduleid);
-												
+			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());									
 			operResp = eventScheduleComp.updateEventSchedule(formParams,eventScheduleid,principalUserId);
 			operResp.setSuccess(true);
 		}

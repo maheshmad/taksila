@@ -30,10 +30,12 @@ import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.config.TenantConfigManager;
+import com.taksila.veda.db.dao.SlidesDAO;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideResponse;
 import com.taksila.veda.model.api.course.v1_0.GetSlideRequest;
@@ -53,6 +55,8 @@ public class Pptx2Image
 	private static String baseDirectory = "C:\\files\\"; 
 	static Logger logger = LogManager.getLogger(SlideComponent.class.getName());	
 	
+	@Autowired
+	ApplicationContext applicationContext;
 	@Autowired
 	TenantConfigManager TenantConfigManager;
 	private String tenantId;
@@ -231,7 +235,7 @@ public class Pptx2Image
 	             /*
 	              * write it into db
 	              */
-	             SlideComponent slideComp = new SlideComponent("1");
+	             SlideComponent slideComp = applicationContext.getBean(SlideComponent.class,tenantId);
 	             	             
 	             GetSlideRequest req = new GetSlideRequest();
 	             req.setName(outname);

@@ -70,15 +70,15 @@ public class ServletUtils
 	 
 	 public static String getSubDomain(String url)
 	 {	      
-		 logger.trace(" getSubDomain = "+url);  
+//		 logger.trace(" getSubDomain = "+url);  
         String host = StringUtils.removeStartIgnoreCase( url,"https://");
         host = StringUtils.removeStartIgnoreCase(host,"http://");
                         
-        logger.trace(" request host for split = "+host);
+//        logger.trace(" request host for split = "+host);
         if (host == null)
         	return null;            
         String[] p = host.split("\\.");       
-        logger.trace(" host variable split by period len = "+p.length);       
+//        logger.trace(" host variable split by period len = "+p.length);       
         String tenantDomain = null;
         for(int i=0;i<p.length;i++)
         {
@@ -99,7 +99,7 @@ public class ServletUtils
 	        }
         }
         
-        logger.trace(" Domain = "+tenantDomain);  
+//        logger.trace(" Domain = "+tenantDomain);  
         
         return tenantDomain;
 	      

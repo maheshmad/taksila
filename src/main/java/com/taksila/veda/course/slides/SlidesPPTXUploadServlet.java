@@ -75,10 +75,10 @@ public class SlidesPPTXUploadServlet extends HttpServlet
         InputStream filecontent = null;
         final PrintWriter writer = response.getWriter();
         
-    	TopicComponent topicComp = new TopicComponent(tenantId);
-
         try 
         {
+        	TopicComponent topicComp = applicationContext.getBean(TopicComponent.class,tenantId);
+
         	final String topicid = request.getParameter("topicid");
         	final Part filePart = request.getPart("slidecontent");
             final String fileName = System.currentTimeMillis()+ServletUtils.getFileName(filePart);           
@@ -153,8 +153,13 @@ public class SlidesPPTXUploadServlet extends HttpServlet
         catch (FileNotFoundException fne) 
         {
            CommonUtils.handleExceptionForResponse(fileUploadResp, fne);
-           logger.trace( "Problems during file upload. Error: {0}",  new Object[]{fne.getMessage()});
-        } 
+           logger.trace( "File cound not be located Error: {0}",  new Object[]{fne.getMessage()});
+        }
+        catch (Exception ex) 
+        {
+           CommonUtils.handleExceptionForResponse(fileUploadResp, ex);
+           logger.trace( "Problems during file upload. Error: {0}",  new Object[]{ex.getMessage()});
+        }
         finally 
         {        	        
         	writer.write(CommonUtils.toJson(fileUploadResp));

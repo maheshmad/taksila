@@ -79,7 +79,6 @@ public class UserService
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@ManagedAsync
     public void createNewUser(@Context HttpServletRequest request,@Context HttpServletResponse response,
-    		final MultivaluedMap<String, String> formParams,
     		@Context final UriInfo uri,	
     		@Suspended final AsyncResponse asyncResp) 
     {    	
@@ -92,6 +91,7 @@ public class UserService
 				CreateNewUserResponse operResp = new CreateNewUserResponse();
 				try 
 				{					
+					MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 					UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 					operResp = userComp.createNewUser(formParams); 
 					if (operResp.getErrorInfo() == null)
@@ -235,7 +235,6 @@ public class UserService
 	@Path("/{id}")
 	public void updateUser(@Context HttpServletRequest request, @Context final UriInfo uri,				
 			@PathParam("id") final String id, 
-			final MultivaluedMap<String, String> formParams,
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
 			
@@ -243,25 +242,28 @@ public class UserService
 		{
 			public void run() 
 			{	
+				logger.trace("about to update the user id = "+id);
 				UpdateUserResponse operResp = new UpdateUserResponse();
 				String tenantId = ServletUtils.getSubDomain(uri);
 				UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 				
 				try 
 				{											
+					MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 					operResp = userComp.updateUser(id, formParams); 			
 					operResp.setSuccess(true);
 				} 
 				catch (Exception ex) 
 				{		
+					ex.printStackTrace();
 					CommonUtils.handleExceptionForResponse(operResp, ex);
 				}
 				
+				logger.trace("************ exiting updateUser() in service");
 				asyncResp.resume(Response.ok(operResp).build());
 			}
 		});
 		
-		logger.trace("************ exiting updateUser() in service");
 				
 	}
 	

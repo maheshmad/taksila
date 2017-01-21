@@ -1,5 +1,7 @@
 package com.taksila.veda.classroom;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -25,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.classroom.v1_0.CreateEnrollmentRequest;
@@ -55,8 +58,7 @@ public class EnrollmentService
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@ManagedAsync
-    public void post(@Context HttpServletRequest request,@Context HttpServletResponse response,
-    		final MultivaluedMap<String, String> formParams,    		
+    public void post(@Context HttpServletRequest request,@Context HttpServletResponse response,    		
     		@Context UriInfo uri,	
     		@Suspended final AsyncResponse asyncResp) 
     {    	
@@ -64,9 +66,10 @@ public class EnrollmentService
 		EnrollmentComponent enrollmentComp = applicationContext.getBean(EnrollmentComponent.class,tenantId);
 		CreateEnrollmentResponse operResp = new CreateEnrollmentResponse();
 		
-		logger.trace("processing enrollment creation..");
 		try 
 		{
+			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
+			logger.trace("processing enrollment creation......size ="+formParams.size());
 			String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			
 			Enrollment enrollment = new Enrollment();
@@ -75,6 +78,7 @@ public class EnrollmentService
 			
 			CreateEnrollmentRequest req = new CreateEnrollmentRequest();
 			req.setEnrollment(enrollment);
+			logger.trace(" creating a new  enrollment "+CommonUtils.toJson(req));
 			
 			operResp = enrollmentComp.createNewEnrollment(req); 			
 			operResp.setSuccess(true);
@@ -136,8 +140,7 @@ public class EnrollmentService
 	 * @param name
 	 * @param enrollmentid
 	 * @param title
-	 * @param subtitle
-	 * @param description
+	 * @param subtitle	 * @param description
 	 * @param resp
 	 * @param asyncResp
 	 */
@@ -148,7 +151,6 @@ public class EnrollmentService
 	@Path("/{enrollmentid}")
 	public void put(@Context HttpServletRequest request, @Context UriInfo uri,	
 			@PathParam("enrollmentid") String enrollmentid,
-    		final MultivaluedMap<String, String> formParams,    		
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
 		String tenantId = ServletUtils.getSubDomain(uri);
@@ -157,6 +159,7 @@ public class EnrollmentService
 		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
 		try
 		{
+			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 			logger.trace("About to update enrollment record = "+enrollmentid);
 			
 			Enrollment enrollment = new Enrollment();

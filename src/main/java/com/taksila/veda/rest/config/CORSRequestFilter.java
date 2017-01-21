@@ -49,7 +49,7 @@ public class CORSRequestFilter implements ContainerRequestFilter
 	public void filter(ContainerRequestContext requestContext) throws IOException 
 	{
 		String method = requestContext.getMethod();	   
-		logger.trace("inside cors filter request method = " + method);;
+//		logger.trace("inside cors filter request method = " + method);;
 	    if(method.equals("OPTIONS")) { 
 	        throw new WebApplicationException(Status.OK);
 	    }

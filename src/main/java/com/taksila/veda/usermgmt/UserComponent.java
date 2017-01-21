@@ -114,7 +114,7 @@ public class UserComponent
 		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
 		try 
 		{
-			User user = usersDAO.getUserById(id);
+			User user = usersDAO.getUserByUserRecordId(id);
 			
 			if (user == null)
 			{	
@@ -177,6 +177,7 @@ public class UserComponent
 		} 
 		catch (Exception e) 
 		{
+			e.printStackTrace();
 			CommonUtils.handleExceptionForResponse(resp, e);
 		}
 		return resp;
@@ -297,6 +298,7 @@ public class UserComponent
 		} 
 		catch (Exception e) 
 		{
+			e.printStackTrace();
 			CommonUtils.handleExceptionForResponse(resp, e);
 		}
 		return resp;
@@ -318,8 +320,8 @@ public class UserComponent
 			 * first fetch the original user record 
 			 */
 			GetUserRequest req = new GetUserRequest();
-			req.setId(id);
-			GetUserResponse userResp = this.getUser(id);
+			req.setId(id);			
+			GetUserResponse userResp = this.getUser(Integer.parseInt(id));
 			
 			/*
 			 * check if the record exists before it can be updated
@@ -327,6 +329,7 @@ public class UserComponent
 			if (userResp == null || userResp.getUser() == null)
 			{						
 				operResp.setStatus(StatusType.FAILED);
+				operResp.setErrorInfo(CommonUtils.buildErrorInfo("id", "Could not located record id = "+id+"! Update was cancelled"));
 				operResp.setMsg("Could not located record id = "+id+"! Update was cancelled");
 			}
 			else

@@ -159,7 +159,7 @@ public class UserAuthComponent
 			logger.trace("About to validate user = "+userid+" pwd = "+pwd);
 			User user = usersDAO.authenticate(userid, pwd);
 						
-			if (user != null && userSessionDAO.addSession(session))
+			if (user != null && userSessionDAO.insertSession(session) != null)
 			{	
 				loginResp.setUserInfo(user);				
 				loginResp.setStatus(StatusType.SUCCESS);				

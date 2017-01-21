@@ -61,8 +61,7 @@ public class EnrollmentComponent
 	public SearchEnrollmentResponse searchEnrollmentByClassroom(SearchEnrollmentRequest req)
 	{
 		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,tenantId);	
-		
-		
+				
 		SearchEnrollmentResponse resp = new SearchEnrollmentResponse();
 		try 
 		{
@@ -200,6 +199,8 @@ public class EnrollmentComponent
 	
 		CreateEnrollmentResponse resp = new CreateEnrollmentResponse();
 		Enrollment enroll = req.getEnrollment();
+		
+		logger.trace(" creating a new  enrollment "+CommonUtils.toJson(req));
 		try 
 		{							
 			/*
@@ -217,8 +218,8 @@ public class EnrollmentComponent
 				 */
 				req.getEnrollment().setId(this.generateEnrollmentId(enroll.getUserRecordId(), enroll.getClassroomid()));
 				
-				Boolean insertsuccess = enrollmentDAO.insertEnrollment(req.getEnrollment());	
-				if (insertsuccess)
+				Enrollment enrolled = enrollmentDAO.insertEnrollment(req.getEnrollment());	
+				if (enrolled != null)
 				{
 					resp.setStatus(StatusType.SUCCESS);
 					resp.setMsg("Successfully enrolled for user = "+req.getEnrollment().getUserRecordId()+" in classroom "+req.getEnrollment().getClassroomid());
@@ -336,7 +337,7 @@ public class EnrollmentComponent
 			CommonUtils.buildErrorInfo(errorInfo, "userRecordId", "Please provide a valid user record id");
 		else
 		{
-			User user = usersDAO.getUserById(Integer.parseInt(enroll.getUserRecordId()));			
+			User user = usersDAO.getUserByUserRecordId(Integer.parseInt(enroll.getUserRecordId()));			
 			if (user == null)
 				CommonUtils.buildErrorInfo(errorInfo, "userId", "Student not found user id = "+enroll.getUserRecordId());
 		}
@@ -367,7 +368,8 @@ public class EnrollmentComponent
 
 	public void mapFormFields(MultivaluedMap<String, String> formParams, Enrollment enrollment) 
 	{
-
+		
+		logger.trace("form params size = "+formParams.size());
 		for (String key: formParams.keySet())
 		{
 			if (StringUtils.equals(key, "id"))

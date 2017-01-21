@@ -32,6 +32,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.NamingException;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -761,5 +763,34 @@ public class CommonUtils
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public static MultivaluedMap<String,String> getMultivaluedMap(Map<String,String[]> mapList) throws Exception
+	{
+		MultivaluedMap<String, String> multiMap = new MultivaluedHashMap<String,String>();
+		try
+		{			
+			for (String key : mapList.keySet()) 
+			{
+			    List<String> newList = new ArrayList<String>();
+			    /*
+			     * loop thru to save it into List
+			     */
+				String values[] = mapList.get(key);
+			    for (String val: values)
+			    {
+			    	newList.add(val);
+			    }
+			    multiMap.put(key, newList);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return multiMap;
+	}
+	
 }
 
