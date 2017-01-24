@@ -19,7 +19,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.taksila.veda.config.ConfigComponent;
 import com.taksila.veda.db.dao.UserImagesDAO;
 import com.taksila.veda.db.dao.UsersDAO;
 import com.taksila.veda.email.EmailUtils;
@@ -39,7 +38,6 @@ import com.taksila.veda.model.api.usermgmt.v1_0.SearchUserResponse;
 import com.taksila.veda.model.api.usermgmt.v1_0.UpdateUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.UpdateUserResponse;
 import com.taksila.veda.model.db.base.v1_0.UserRole;
-import com.taksila.veda.model.db.config.v1_0.ConfigId;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageInfo;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageType;
@@ -48,7 +46,7 @@ import com.taksila.veda.utils.CommonUtils;
 
 @Component
 @Scope(value="prototype")
-public class UserComponent 
+public class UserComponent
 {	
 	@Autowired
 	ApplicationContext applicationContext;
@@ -479,8 +477,8 @@ public class UserComponent
 			if (StringUtils.equals(key, "emailId"))
 				user.setEmailId(formParams.getFirst("emailId"));
 			
-			if (StringUtils.equals(key, "userrole"))						
-				user.setUserrole(UserRole.fromValue(formParams.getFirst("userrole")));		
+			if (StringUtils.equals(key, "userrole"))			
+				user.getUserRoles().add(UserRole.fromValue(formParams.getFirst("userrole")));		
 			
 			if (StringUtils.equals(key, "firstName"))
 				user.setFirstName(formParams.getFirst("firstName"));
@@ -681,6 +679,44 @@ public class UserComponent
 		
 		return allowedActionsResp;
 	}
+	
+//	@Override
+//	public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException 
+//	{		
+//		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
+//		try 
+//		{
+//			User user = usersDAO.getUserByUserId(username);
+//			
+//			if (user == null)
+//			{	
+//				return null;
+//			}
+//			else
+//			{				
+//				return new JwtUser(Long.parseLong(user.getId()),
+//															user.getUserId(),
+//															user.getFirstName(),
+//															user.getLastName(),
+//															user.getUserPswd(),
+//															user.getEmailId(),
+//															null,
+//															true,
+//															null);
+//				
+//				
+//			}
+//			
+//			
+//
+//		} 
+//		catch (Exception e) 
+//		{
+//			e.printStackTrace();
+//		}
+//		
+//		return null;
+//	}
 	
 	
 }

@@ -1,5 +1,9 @@
 package com.taksila.veda.security;
 
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.db.dao.UserSessionDAO;
 import com.taksila.veda.db.dao.UsersDAO;
 import com.taksila.veda.email.EmailUtils;
@@ -30,6 +35,11 @@ public class UserAuthComponent
 	
 	@Autowired
 	EmailUtils emailUtils;
+	
+	@Autowired
+	JwtTokenUtil jwtTokenUtil;
+		
+		
 	
 	private String dateFormat = "MM/dd/yyyy HH:mm:ss z";
 	static Logger logger = LogManager.getLogger(UserAuthComponent.class.getName());
@@ -148,22 +158,27 @@ public class UserAuthComponent
 	 * @param sessionid
 	 * @return
 	 */
-	public UserLoginResponse authenticate(String userid, String pwd, UserSession session) 
+	public UserLoginResponse authenticate(String userid, String pwd, JwtEndClientDevice device) 
 	{
 		UserSessionDAO userSessionDAO = applicationContext.getBean(UserSessionDAO.class,tenantId);
 		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
-
+		
+		UserSession session = this.buildUserSession(userid, device);
 		UserLoginResponse loginResp = new UserLoginResponse();
 		try 
 		{
 			logger.trace("About to validate user = "+userid+" pwd = "+pwd);
 			User user = usersDAO.authenticate(userid, pwd);
 						
-			if (user != null && userSessionDAO.insertSession(session) != null)
-			{	
+			if (user != null)
+			{													
+				userSessionDAO.insertSession(session);
+				
 				loginResp.setUserInfo(user);				
 				loginResp.setStatus(StatusType.SUCCESS);				
 				loginResp.setSessionInfo(session);
+				
+				loginResp.setJwtToken(jwtTokenUtil.generateToken(session, device));
 			}
 			else
 			{
@@ -252,6 +267,23 @@ public class UserAuthComponent
 		this.emailUtils.sendMail(this.tenantId, user.getEmailId(), "support@localhost.com", "Password Reset", msg, null);
 		
 		
+	}
+	
+	
+	/*
+	 * 
+	 */
+	private UserSession buildUserSession(String userId, JwtEndClientDevice device)
+	{
+		UserSession userSession = new UserSession();		
+		
+		userSession.setId(UUID.randomUUID().toString());
+		userSession.setClient(device.platForm.name());
+		userSession.setIpAddr(device.ipAddress);
+		userSession.setUserId(userId);
+		userSession.setExpiresOn(CommonUtils.getXMLGregorianCalendarNow());
+		
+		return userSession;
 	}
 	
 }

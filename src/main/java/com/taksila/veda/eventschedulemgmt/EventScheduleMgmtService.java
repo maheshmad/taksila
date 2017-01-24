@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
-import com.taksila.veda.classroom.EnrollmentComponent;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleResponse;
@@ -51,6 +50,9 @@ public class EventScheduleMgmtService
 	
 	@Autowired
 	ApplicationContext applicationContext;
+	
+	@Autowired
+	SecurityUtils securityUtils;
 	/**
 	 * 	 
 	 */
@@ -70,7 +72,7 @@ public class EventScheduleMgmtService
 		try 
 		{
 			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
-			String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
+			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			
 			EventSchedule eventSchedule = new EventSchedule();
 			eventScheduleComp.mapFormFields(formParams, eventSchedule);
@@ -114,7 +116,7 @@ public class EventScheduleMgmtService
 		logger.trace("processing updateSessionId ..");
 		try 
 		{
-			String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
+			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 									
 			UpdateEventScheduleSessionIdRequest req = new UpdateEventScheduleSessionIdRequest();
 			req.setUserRecordId(principalUserId);
@@ -197,11 +199,11 @@ public class EventScheduleMgmtService
 	{    				
 		String tenantId = ServletUtils.getSubDomain(uri);
 		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
-		UpdateEventScheduleResponse operResp = new UpdateEventScheduleResponse();		
-		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
+		UpdateEventScheduleResponse operResp = new UpdateEventScheduleResponse();				
 		try
 		{
 			logger.trace("About to update eventSchedule record = "+eventScheduleid);
+			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());									
 			operResp = eventScheduleComp.updateEventSchedule(formParams,eventScheduleid,principalUserId);
 			operResp.setSuccess(true);

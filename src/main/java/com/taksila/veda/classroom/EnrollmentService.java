@@ -51,6 +51,9 @@ public class EnrollmentService
 	
 	@Autowired
 	ApplicationContext applicationContext;
+	
+	@Autowired
+	SecurityUtils securityUtils;
 	/**
 	 * 	 
 	 */
@@ -70,7 +73,7 @@ public class EnrollmentService
 		{
 			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 			logger.trace("processing enrollment creation......size ="+formParams.size());
-			String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
+			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			
 			Enrollment enrollment = new Enrollment();
 			enrollmentComp.mapFormFields(formParams, enrollment);
@@ -155,13 +158,12 @@ public class EnrollmentService
 	{    				
 		String tenantId = ServletUtils.getSubDomain(uri);
 		EnrollmentComponent enrollmentComp = applicationContext.getBean(EnrollmentComponent.class,tenantId);
-		UpdateEnrollmentResponse operResp = new UpdateEnrollmentResponse();		
-		String principalUserId = SecurityUtils.getLoggedInPrincipalUserid(tenantId, request);
+		UpdateEnrollmentResponse operResp = new UpdateEnrollmentResponse();				
 		try
 		{
 			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 			logger.trace("About to update enrollment record = "+enrollmentid);
-			
+			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			Enrollment enrollment = new Enrollment();
 			enrollment.setId(enrollmentid);
 			enrollment.setUpdatedBy(principalUserId);

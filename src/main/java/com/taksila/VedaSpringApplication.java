@@ -11,7 +11,7 @@ import com.taksila.veda.db.eventsessions.EventSessionsRepository;
 
 @SpringBootApplication
 @ComponentScan("com.taksila")
-@ServletComponentScan 
+@ServletComponentScan
 public class VedaSpringApplication 
 {
 	public static void main(String[] args) 
@@ -19,6 +19,7 @@ public class VedaSpringApplication
 		SpringApplication.run(VedaSpringApplication.class, args);
 				
 	}		
+	
 	
 	@Bean
 	public CommandLineRunner addRepo(EventSessionsRepository repository)

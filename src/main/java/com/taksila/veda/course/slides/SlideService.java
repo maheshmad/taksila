@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.course.ChapterComponent;
@@ -48,6 +49,7 @@ import com.taksila.veda.utils.CommonUtils;
 
 
 @Path("/slides")
+@Service
 public class SlideService 
 {
 	static Logger logger = LogManager.getLogger(SlideService.class.getName());	

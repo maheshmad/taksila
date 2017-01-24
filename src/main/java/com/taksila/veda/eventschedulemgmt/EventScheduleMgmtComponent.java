@@ -3,6 +3,7 @@ package com.taksila.veda.eventschedulemgmt;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -50,7 +51,7 @@ public class EventScheduleMgmtComponent
 {	
 	@Autowired
 	ApplicationContext applicationContext;
-	
+			
 	static Logger logger = LogManager.getLogger(EventScheduleMgmtComponent.class.getName());
 	private String tenantId;
 	
@@ -155,6 +156,19 @@ public class EventScheduleMgmtComponent
 		}
 		return resp;
 	}
+	
+	/**
+	 * 
+	 * @param eventScheduleId
+	 * @return EventSchedule
+	 */
+	public EventSchedule getEventSchedule(String eventScheduleId)
+	{
+		GetEventScheduleRequest req = new GetEventScheduleRequest();
+		req.setId(eventScheduleId);
+		return this.getEventSchedule(req).getEventSchedule();
+	}
+	
 	
 	
 	/**
@@ -628,6 +642,48 @@ public class EventScheduleMgmtComponent
 		
 		return null;
 		
+	}
+
+
+	public Err isOwnerOfSchedule(String userid, String eventScheduleId) 
+	{		
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+				
+		try 
+		{
+			EventSchedule sche = eventScheduleDAO.getEventScheduleById(eventScheduleId);
+			if (sche == null)
+			{
+				return CommonUtils.buildErr("id", "Did not find any schedule with id = "+eventScheduleId);				
+			}
+			else;
+			
+			return this.isOwnerOfSchedule(sche, userid);
+			
+		} 
+		catch (Exception e) 
+		{		
+			e.printStackTrace();
+			return CommonUtils.buildErr("eventScheduleId", "Could not locate event schedule = "+eventScheduleId+" due to db exception! Contact support!");
+		}		
+	
+	}
+	
+	
+	public Err isOwnerOfSchedule(EventSchedule sche, String userid) 
+	{		
+		if (sche == null)
+		{
+			return null;
+		}
+		
+		if (!StringUtils.equalsIgnoreCase(userid, sche.getUpdatedBy()))
+		{
+			return CommonUtils.buildErr("userid", "User "+userid+" is not the owner of this schedule!");	
+		}
+			
+	
+		return null;
 	}
 	
 	

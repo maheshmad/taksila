@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
@@ -36,18 +37,20 @@ import com.taksila.veda.model.api.security.v1_0.ResetPasswordResponse;
 import com.taksila.veda.model.api.security.v1_0.UserLoginResponse;
 import com.taksila.veda.model.db.security.v1_0.UserSession;
 import com.taksila.veda.utils.CommonUtils;
+import com.taksila.veda.utils.UAgentInfo;
 
 @Component
 @Path("/auth")
 public class UserAuthService 
 {
 	static Logger logger = LogManager.getLogger(UserAuthService.class.getName());
-	public static final String USER_AUTH_SESSION_COOKIE_NAME = "authsessionid";
+	public static final String USER_AUTH_SESSION_COOKIE_NAME = "x-auth-cookie";
+	public static final String USER_AUTH_SESSION_ATTR = "user-auth-info";
 	Client client = ClientBuilder.newClient();   
 	
 	@Autowired
 	ApplicationContext applicationContext;
-	
+		
 	/*
 	 * Login using local LDAP without oauth
 	 */
@@ -63,14 +66,13 @@ public class UserAuthService
 		try 
 		{
 			logger.trace("About to authenticate ");
-			HttpSession session = request.getSession(true);		
-			String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());				
+			String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());
+			JwtEndClientDevice jwtEndClientDevice = new JwtEndClientDevice(request);
 			/*
 			 * get user info
 			 */			
 			UserAuthComponent userAuthComponent = applicationContext.getBean(UserAuthComponent.class,tenantId);
-			UserSession userSession  = this.buildUserSession(userid, session.getId(), request);			
-			loginResp = userAuthComponent.authenticate(userid,password,userSession);
+			loginResp = userAuthComponent.authenticate(userid,password,jwtEndClientDevice);
 			logger.trace(CommonUtils.toJson(loginResp));
 			loginResp.setSuccess(true);
 			if (loginResp.getErrorInfo() != null)
@@ -78,9 +80,8 @@ public class UserAuthService
 				asyncResp.resume(Response.status(403).entity(loginResp).build());
 			}
 			else
-			{
-				
-				NewCookie cookie = new NewCookie(USER_AUTH_SESSION_COOKIE_NAME, userSession.getId());
+			{								
+				NewCookie cookie = new NewCookie(USER_AUTH_SESSION_COOKIE_NAME, loginResp.getJwtToken(),"/veda", "", "authorization cookie", 1000000, false);
 				asyncResp.resume(Response.ok(loginResp).cookie(cookie).build());
 			}
 		} 
@@ -281,19 +282,7 @@ public class UserAuthService
         
     }
 	
-	/*
-	 * 
-	 */
-	private UserSession buildUserSession(String userId, String sessionId, HttpServletRequest request)
-	{
-		UserSession userSession = new UserSession();
-		userSession.setId(sessionId);
-		userSession.setClient(request.getHeader("User-Agent"));
-		userSession.setIpAddr(ServletUtils.getClientIpAddr(request));
-		userSession.setUserId(userId);
-		userSession.setExpiresOn(CommonUtils.getXMLGregorianCalendarNow());
-		
-		return userSession;
-	}
+
+	
 	
 }
