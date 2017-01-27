@@ -1,6 +1,7 @@
 package com.taksila.servlet.utils;
 
 import java.net.URI;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +54,22 @@ public class ServletUtils
 	public static String getSubDomain(UriInfo uriInfo)
 	 {	      
 		 return getSubDomain(uriInfo.getRequestUri());
+	      
+	 }
+	
+	public static String getSubDomain(Map<String,Object> attributesMap)
+	 {	      
+		for (String attr: attributesMap.keySet())
+		{
+			if (StringUtils.equalsIgnoreCase("host", attr))
+			{
+				URI uri = (URI) attributesMap.get(attr);
+				return getSubDomain(uri.getHost());
+			}
+			
+		}
+		
+		return null;
 	      
 	 }
 	

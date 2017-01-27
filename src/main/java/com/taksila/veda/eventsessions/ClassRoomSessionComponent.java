@@ -1,44 +1,43 @@
 package com.taksila.veda.eventsessions;
 
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.taksila.veda.db.dao.EventScheduleDAO;
-import com.taksila.veda.db.dao.EventScheduleRepositoryInterface;
 import com.taksila.veda.db.eventsessions.EventSessionsRepository;
 import com.taksila.veda.eventschedulemgmt.EventScheduleMgmtComponent;
-import com.taksila.veda.eventschedulemgmt.EventScheduleMgmtService;
+import com.taksila.veda.model.api.base.v1_0.Err;
 import com.taksila.veda.model.api.base.v1_0.ErrorInfo;
-import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.GetEventScheduleResponse;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleRequest;
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionRequest;
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionResponse;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventSchedule;
 import com.taksila.veda.model.db.event_session.v1_0.EventSession;
 import com.taksila.veda.socket.services.SocketEvent;
-import com.taksila.veda.socket.services.SocketEvent.SocketEventType;
 import com.taksila.veda.utils.CommonUtils;
 
 
 
 @Component
 @Scope(value="prototype")
-@Lazy(value = true)
 public class ClassRoomSessionComponent 
 {	
-	
+	static Logger logger = LogManager.getLogger(ClassRoomSessionComponent.class.getName());
+
 	@Autowired
 	ApplicationContext applicationContext;	
 	String tenantId;
 	
-	@Autowired
 	public ClassRoomSessionComponent(@Value("tenantId") String tenantId)
 	{
 		this.tenantId = tenantId;
+		logger.trace("building ClassRoomSessionComponent for tenantid = "+tenantId);
 	}
 	
 //	public SocketEvent broadcastJoinMessage(String eventSessionId,SocketEvent eventMsg)
@@ -54,7 +53,7 @@ public class ClassRoomSessionComponent
 	public void test()
 	{
 		EventSessionsRepository repository = applicationContext.getBean(EventSessionsRepository.class,tenantId);
-		EventSessionsRepository repository2 = applicationContext.getBean(EventSessionsRepository.class,"school1");
+		EventSessionsRepository repository2 = applicationContext.getBean(EventSessionsRepository.class,tenantId);
 		
 		EventSession a = new EventSession();
 		a.setUserRecordId("mm1");
@@ -135,6 +134,7 @@ public class ClassRoomSessionComponent
 	 */
 	public StartEventSessionResponse startEventSession(StartEventSessionRequest startEventSessionRequest) 
 	{
+		logger.trace("inside startEventSession!!!");
 		EventSessionsRepository eventSessionsRepository = applicationContext.getBean(EventSessionsRepository.class,this.tenantId);
 		EventScheduleMgmtComponent eventScheduleMgmtComponent = applicationContext.getBean(EventScheduleMgmtComponent.class,this.tenantId);
 				
@@ -154,21 +154,24 @@ public class ClassRoomSessionComponent
 			 *   
 			 */
 			startEventSessionResponse.setErrorInfo(new ErrorInfo());						
+			List<Err> errors = startEventSessionResponse.getErrorInfo().getErrors();
 			/*
 			 * check is its a valid scheduled event
 			 */
 			EventSchedule eventSchedule = eventScheduleMgmtComponent.getEventSchedule(evtScheId);
 			if (eventSchedule == null)
-				startEventSessionResponse.getErrorInfo().getErrors().add(CommonUtils.buildErr("eventScheduleId", "Event schedule id = "+evtScheId+" is not found in db!"));
+				errors.add(CommonUtils.buildErr("eventScheduleId", "Event schedule id = "+evtScheId+" is not found in db!"));
 			/*
 			 * check if the userid is the owner of the schedule id
 			 */			
-			startEventSessionResponse.getErrorInfo().getErrors().add(eventScheduleMgmtComponent.isOwnerOfSchedule(eventSchedule, userRecid));
+			eventScheduleMgmtComponent.isOwnerOfSchedule(eventSchedule, userRecid);
 			
 			/*
 			 * check if validations passed
 			 */
-			if (!startEventSessionResponse.getErrorInfo().getErrors().isEmpty())
+			if (startEventSessionResponse.getErrorInfo().getErrors() != null &&
+					!startEventSessionResponse.getErrorInfo().getErrors().isEmpty() &&
+					startEventSessionResponse.getErrorInfo().getErrors().get(0) != null)
 			{
 				return startEventSessionResponse;
 			}
@@ -177,6 +180,8 @@ public class ClassRoomSessionComponent
 			 * since validations passed, now 
 			 * save the event session in db and update it in eventschedule 
 			 */
+			logger.trace("validations passed inside startEventSession!!!");
+
 			String eventSessionId = this.generateEventSessionId(evtScheId, userRecid);
 			EventSession newEventSession = new EventSession();
 			newEventSession.setUserRecordId(userRecid);	
