@@ -4,7 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -280,7 +283,7 @@ public class UserComponent
 		try 
 		{
 			//TODO validation
-			
+			logger.trace("about to add user to DB = "+CommonUtils.toJson(req.getUser()));
 			boolean updateSucceded = usersDAO.updateUser(req.getUser());
 			if (updateSucceded)
 			{
@@ -313,7 +316,7 @@ public class UserComponent
 		UpdateUserResponse operResp = new UpdateUserResponse();
 		try	
 		{
-			logger.trace("About to update user record = "+id);			
+			logger.trace("About to update user record = "+id+ " for fields "+CommonUtils.toJson(formParams));			
 			/*
 			 * first fetch the original user record 
 			 */
@@ -466,6 +469,7 @@ public class UserComponent
 		 * update only the fields that have being sent in the 
 		 * form
 		 */
+		logger.trace(CommonUtils.toJson(formParams));
 		for (String key: formParams.keySet())
 		{
 			if (StringUtils.equals(key, "id"))
@@ -477,8 +481,12 @@ public class UserComponent
 			if (StringUtils.equals(key, "emailId"))
 				user.setEmailId(formParams.getFirst("emailId"));
 			
-			if (StringUtils.equals(key, "userrole"))			
-				user.getUserRoles().add(UserRole.fromValue(formParams.getFirst("userrole")));		
+			if (StringUtils.equals(key, "userRoles"))
+			{
+				logger.trace("user roles from ui = "+formParams.getFirst("userRoles"));
+				user.getUserRoles().clear();
+				user.getUserRoles().addAll(CommonUtils.convertStringToUserRoles(formParams.getFirst("userRoles")));
+			}
 			
 			if (StringUtils.equals(key, "firstName"))
 				user.setFirstName(formParams.getFirst("firstName"));

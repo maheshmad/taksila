@@ -1,6 +1,7 @@
 package com.taksila.veda.eventsessions;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +19,7 @@ import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleRe
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionRequest;
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionResponse;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventSchedule;
+import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventStatusType;
 import com.taksila.veda.model.db.event_session.v1_0.EventSession;
 import com.taksila.veda.socket.services.SocketEvent;
 import com.taksila.veda.utils.CommonUtils;
@@ -192,10 +194,11 @@ public class ClassRoomSessionComponent
 				/*
 				 * update the schedule db
 				 */
-				eventSchedule.setEventSessionId(eventSessionId);			
+				eventSchedule.setEventSessionId(eventSessionId);
+				eventSchedule.setEventStatus(EventStatusType.IN_PROGRESS);
 				UpdateEventScheduleRequest updateEventScheduleReq = new UpdateEventScheduleRequest();
 				updateEventScheduleReq.setEventSchedule(eventSchedule);
-				updateEventScheduleReq.setUserRecordId(userRecid);
+				updateEventScheduleReq.setUserRecordId(userRecid);				
 				eventScheduleMgmtComponent.updateEventSchedule(updateEventScheduleReq);
 			}
 			else
@@ -224,7 +227,7 @@ public class ClassRoomSessionComponent
 	
 	public String generateEventSessionId(String eventScheduleId, String userid)
 	{		
-		return eventScheduleId+userid;		
+		return UUID.randomUUID().toString();		
 	}
 	
 	

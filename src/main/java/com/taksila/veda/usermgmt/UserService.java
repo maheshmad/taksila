@@ -237,7 +237,7 @@ public class UserService
 			@PathParam("id") final String id, 
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
-			
+		MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());	
 		executor.execute(new Runnable() 
 		{
 			public void run() 
@@ -249,7 +249,6 @@ public class UserService
 				
 				try 
 				{											
-					MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
 					operResp = userComp.updateUser(id, formParams); 			
 					operResp.setSuccess(true);
 				} 
