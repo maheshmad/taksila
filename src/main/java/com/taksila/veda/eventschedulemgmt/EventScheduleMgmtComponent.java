@@ -456,12 +456,12 @@ public class EventScheduleMgmtComponent
 		if (eventScheudle == null)
 			errs.add(CommonUtils.buildErr("INVALID", "No event schedule found in the request!"));
 		
-		errs.add(this.isValidEventDesc(eventScheudle.getEventDescription(), false));
-		errs.add(this.isValidEventEndDate(eventScheudle.getEventEndDate(), true));
-		errs.add(this.isValidEventStartDate(eventScheudle.getEventStartDate(), true));
-		errs.add(this.isValidEventStatus(eventScheudle.getEventStatus(), false));
-		errs.add(this.isValidEventTitle(eventScheudle.getEventTitle(), true));
-		errs.add(this.isValidEventType(eventScheudle.getEventType(), true));
+		this.isValidEventDesc(eventScheudle.getEventDescription(), false, errs);
+		this.isValidEventEndDate(eventScheudle.getEventEndDate(), true, errs);
+		this.isValidEventStartDate(eventScheudle.getEventStartDate(), true, errs);
+		this.isValidEventStatus(eventScheudle.getEventStatus(), false, errs);
+		this.isValidEventTitle(eventScheudle.getEventTitle(), true, errs);
+		this.isValidEventType(eventScheudle.getEventType(), true, errs);
 		
 		for (Err er: errs)
 		{
@@ -480,11 +480,15 @@ public class EventScheduleMgmtComponent
 	 * @param checkMandatory
 	 * @return
 	 */
-	public Err isValidEventType(EventType eventType, boolean checkMandatory)
+	public boolean isValidEventType(EventType eventType, boolean checkMandatory, List<Err> errors) 
 	{
-		if (checkMandatory && eventType == null) return CommonUtils.buildErr("eventType", "is missing, Please provide a valid value");
+		if (checkMandatory && eventType == null)
+		{			
+			errors.add(CommonUtils.buildErr("eventType", "is missing, Please provide a valid value"));
+			return false;
+		}
 		
-		return null;
+		return true;
 //		try
 //		{
 //			EventType.fromValue(eventType);
@@ -498,12 +502,16 @@ public class EventScheduleMgmtComponent
 	}
 	
 	
-	public Err isValidEventStatus(EventStatusType eventStatusType, boolean checkMandatory)
+	public boolean isValidEventStatus(EventStatusType eventStatusType, boolean checkMandatory, List<Err> errors) 
 	{
-		if (checkMandatory && eventStatusType == null) 
-			return CommonUtils.buildErr("eventStatus", "is missing, Please provide a valid value");
-		else
-			return null;
+	
+		if (checkMandatory && eventStatusType == null)
+		{			
+			errors.add(CommonUtils.buildErr("eventStatus", "is missing, Please provide a valid value"));
+			return false;
+		}
+		
+		return true;
 		
 //		
 //		try
@@ -519,12 +527,15 @@ public class EventScheduleMgmtComponent
 	}
 	
 	
-	public Err isValidEventTitle(String val, boolean checkMandatory)
+	public boolean isValidEventTitle(String val, boolean checkMandatory, List<Err> errors) 
 	{
-		if (checkMandatory && StringUtils.isBlank(val)) return CommonUtils.buildErr("eventTitle", "is missing, Please provide a valid value");
+		if (checkMandatory && StringUtils.isBlank(val)) 
+		{			
+			errors.add(CommonUtils.buildErr("eventTitle", "is missing, Please provide a valid value"));
+			return false;
+		}
 		
-				
-		return null;
+		return true;
 		
 	}
 	
@@ -534,59 +545,89 @@ public class EventScheduleMgmtComponent
 	 * @param checkMandatory
 	 * @return
 	 */
-	public Err isValidEventStartDate(XMLGregorianCalendar val, boolean checkMandatory)
+	public boolean isValidEventStartDate(XMLGregorianCalendar val, boolean checkMandatory, List<Err> errors) 
 	{
-		return ValidationUtils.isValidDate("eventStartDate", val, "yyyy-MM-dd", checkMandatory);
-				
+		Err err = ValidationUtils.isValidDate("eventStartDate", val, "yyyy-MM-dd", checkMandatory);
+		if (err != null)
+		{
+			if (errors != null)
+				errors.add(err);
+			return false;
+		}
+		
+		return true;		
 	}
 	
-	public Err isValidEventEndDate(XMLGregorianCalendar val, boolean checkMandatory)
+	public boolean isValidEventEndDate(XMLGregorianCalendar val, boolean checkMandatory, List<Err> errors) 
 	{
-		return ValidationUtils.isValidDate("eventEndDate", val,"yyyy-MM-dd", checkMandatory);	
+		Err err = ValidationUtils.isValidDate("eventEndDate", val,"yyyy-MM-dd", checkMandatory);
+		if (err != null)
+		{
+			if (errors != null)
+			errors.add(err);
+			return false;
+		}
+		
+		return true;
+			
 	}
 	
-	public Err isValidEventDesc(String val, boolean checkMandatory)
+	public boolean isValidEventDesc(String val, boolean checkMandatory, List<Err> errors) 
 	{
-		if (checkMandatory && StringUtils.isBlank(val)) return CommonUtils.buildErr("eventTitle", "is missing, Please provide a valid value");
+		if (checkMandatory && StringUtils.isBlank(val))
+		{
+			errors.add(CommonUtils.buildErr("eventTitle", "is missing, Please provide a valid value"));
+			return false;
+		}
 		
-		return null;
-		
-				
+		return true;
 		
 	}
 	
-	public Err isValidEventRecordId(String val, boolean checkMandatory)
+	public boolean isValidEventRecordId(String val, boolean checkMandatory, List<Err> errors) 
 	{
 		ClassroomComponent classroomComp = applicationContext.getBean(ClassroomComponent.class,tenantId);	
 		
-		if (checkMandatory && StringUtils.isBlank(val)) return CommonUtils.buildErr("eventTitle", "is missing, Please provide a valid value");
+		if (checkMandatory && StringUtils.isBlank(val))
+		{
+			errors.add(CommonUtils.buildErr("eventTitle", "is missing, Please provide a valid value"));
+			return false;
+		}
 		
-		return classroomComp.checkClassroomidExists(val);
+		return classroomComp.checkClassroomidExists(val,errors);
 		
 		
 	}
 	
-	public Err isValidId(String val, boolean checkMandatory)
+	public boolean isValidId(String val, boolean checkMandatory, List<Err> errors) 
 	{
-		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);
+		if (errors == null)
+			errors = new ArrayList<Err>();
 		
-		if (checkMandatory && StringUtils.isBlank(val)) return CommonUtils.buildErr("id", "is missing, Please provide a valid value");
+		if (checkMandatory && StringUtils.isBlank(val)) 
+		{
+			errors.add(CommonUtils.buildErr("id", "is missing, Please provide a valid value"));
+			return false;
+		}
 		
 		try 
 		{
 			if (eventScheduleDAO.getEventScheduleById(val) == null)
 			{
-				return CommonUtils.buildErr("id", "Did not find any schedule with id = "+val);				
+				errors.add(CommonUtils.buildErr("id", "Did not find any schedule with id = "+val));
+				return false;
 			}
 			else;
 		} 
 		catch (Exception e) 
 		{		
 			e.printStackTrace();
-			return CommonUtils.buildErr("classroomid", "Could not locate classroom = "+val+" due to db exception, reason :"+e.getMessage());
+			errors.add(CommonUtils.buildErr("classroomid", "Could not locate classroom = "+val+" due to db exception, reason :"+e.getMessage()));
+			return false;
 		}		
 	
-		return null;
+		return true;
 		
 	}
 
@@ -645,7 +686,7 @@ public class EventScheduleMgmtComponent
 	}
 
 
-	public Err isOwnerOfSchedule(String userid, String eventScheduleId) 
+	public boolean isOwnerOfSchedule(String userid, String eventScheduleId, List<Err> errors) 
 	{		
 		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
 				
@@ -654,36 +695,44 @@ public class EventScheduleMgmtComponent
 			EventSchedule sche = eventScheduleDAO.getEventScheduleById(eventScheduleId);
 			if (sche == null)
 			{
-				return CommonUtils.buildErr("id", "Did not find any schedule with id = "+eventScheduleId);				
+				if (errors !=null)
+					errors.add(CommonUtils.buildErr("id", "Did not find any schedule with id = "+eventScheduleId));
+					
+				return false;
 			}
 			else;
 			
-			return this.isOwnerOfSchedule(sche, userid);
+			return this.isOwnerOfSchedule(sche, userid,errors);
 			
 		} 
 		catch (Exception e) 
 		{		
-			e.printStackTrace();
-			return CommonUtils.buildErr("eventScheduleId", "Could not locate event schedule = "+eventScheduleId+" due to db exception! Contact support!");
+			if (errors !=null)
+				errors.add(CommonUtils.buildErr("eventScheduleId", "Could not locate event schedule = "+eventScheduleId+" due to db exception! Contact support!"));
 		}		
 	
+		return true;
+		
 	}
 	
 	
-	public Err isOwnerOfSchedule(EventSchedule sche, String userid) 
+	public boolean isOwnerOfSchedule(EventSchedule sche, String userid, List<Err> errors) 
 	{		
 		if (sche == null)
 		{
-			return null;
+			return false;
 		}
 		
 		if (!StringUtils.equalsIgnoreCase(userid, sche.getUpdatedBy()))
 		{
-			return CommonUtils.buildErr("userid", "User "+userid+" is not the owner of this schedule!");	
+			if (errors !=null)
+				errors.add(CommonUtils.buildErr("userid", "User "+userid+" is not the owner of this schedule!"));
+			
+			return false;
 		}
 			
 	
-		return null;
+		return true;
 	}
 	
 	

@@ -126,10 +126,10 @@ public class EventSessionController
 			logger.trace("response from session start = "+CommonUtils.toJson(startEventSessionResponse));
 			if (startEventSessionResponse != null &&
 				startEventSessionResponse.getErrorInfo() != null && 
-				startEventSessionResponse.getErrorInfo().getErrors() != null &&
 				startEventSessionResponse.getErrorInfo().getErrors().isEmpty())	
 			{
 				eventMsgReply.setType(SocketEventType.ACTION_SUCCESS);
+				eventMsgReply.setMsg("Event started at "+startEventSessionResponse.getEventSession().getJoiningDateTime());
 			}
 			else
 				eventMsgReply.setMsg(startEventSessionResponse.getErrorInfo().getErrors().get(0).getErrorMsg());

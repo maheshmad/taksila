@@ -214,7 +214,7 @@ public class ClassroomComponent
 	 * @param classroomid
 	 * @return
 	 */
-	public Err checkClassroomidExists(String classroomid)
+	public boolean checkClassroomidExists(String classroomid, List<Err> errors)
 	{		
 		Classroom classroom;
 		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,tenantId);
@@ -223,17 +223,19 @@ public class ClassroomComponent
 			classroom = classroomDAO.getClassroomById(classroomid);				
 			if (classroom == null)
 			{	
-				return CommonUtils.buildErr("classroomid", "Did not find any records with id = "+classroomid);				
+				errors.add(CommonUtils.buildErr("classroomid", "Did not find any records with id = "+classroomid));
+				return false;
 			}
 			else;
 		} 
 		catch (Exception e) 
 		{		
 			e.printStackTrace();
-			return CommonUtils.buildErr("classroomid", "Could not locate classroom = "+classroomid+" due to db exception, reason :"+e.getMessage());
+			errors.add(CommonUtils.buildErr("classroomid", "Could not locate classroom = "+classroomid+" due to db exception, reason :"+e.getMessage()));
+			return false;
 		}		
 		
-		return null;
+		return true;
 		
 	}
 	

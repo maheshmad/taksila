@@ -164,14 +164,13 @@ public class ClassRoomSessionComponent
 			/*
 			 * check if the userid is the owner of the schedule id
 			 */			
-			eventScheduleMgmtComponent.isOwnerOfSchedule(eventSchedule, userRecid);
+			eventScheduleMgmtComponent.isOwnerOfSchedule(eventSchedule, userRecid, errors);
 			
 			/*
 			 * check if validations passed
 			 */
 			if (startEventSessionResponse.getErrorInfo().getErrors() != null &&
-					!startEventSessionResponse.getErrorInfo().getErrors().isEmpty() &&
-					startEventSessionResponse.getErrorInfo().getErrors().get(0) != null)
+					!startEventSessionResponse.getErrorInfo().getErrors().isEmpty())
 			{
 				return startEventSessionResponse;
 			}
