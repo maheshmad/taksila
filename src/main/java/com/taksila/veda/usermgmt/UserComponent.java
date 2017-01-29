@@ -4,10 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -40,12 +37,11 @@ import com.taksila.veda.model.api.usermgmt.v1_0.SearchUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.SearchUserResponse;
 import com.taksila.veda.model.api.usermgmt.v1_0.UpdateUserRequest;
 import com.taksila.veda.model.api.usermgmt.v1_0.UpdateUserResponse;
-import com.taksila.veda.model.db.base.v1_0.UserRole;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageInfo;
 import com.taksila.veda.model.db.usermgmt.v1_0.UserImageType;
-import com.taksila.veda.utils.AppEnvConfig;
 import com.taksila.veda.utils.CommonUtils;
+import com.taksila.veda.utils.SysAdminConfig;
 
 @Component
 @Scope(value="prototype")
@@ -551,7 +547,7 @@ public class UserComponent
 	{
 		try
 		{
-			String invitationUrl = AppEnvConfig.GENERAL_DOMAIN_ROOT;
+			String invitationUrl = SysAdminConfig.GENERAL_DOMAIN_ROOT;
 			String msg = "Hello "+user.getFirstName()+", <br /><br /><br />"
 					+ "Welcome to Veda. <br />"
 					+ "Please click below to activate and set up your account.<br /><br />"
@@ -659,9 +655,9 @@ public class UserComponent
 	 */
 	public String getUserTempFilePath(String userid)
 	{
-		String basePath = AppEnvConfig.TEMP_FILE_PATH;
+		String basePath = SysAdminConfig.TEMP_FILE_PATH;
 		basePath = StringUtils.removeEnd(basePath, "\\");
-		String dirPath = AppEnvConfig.TEMP_FILE_PATH+"\\users\\"+userid+"\\";
+		String dirPath = SysAdminConfig.TEMP_FILE_PATH+"\\users\\"+userid+"\\";
 		boolean dirExits = new File(dirPath).mkdirs();
 		return dirPath;  
 	}

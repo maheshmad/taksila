@@ -71,7 +71,7 @@ public class EventScheduleMgmtService
 		logger.trace("processing eventSchedule creation..");
 		try 
 		{
-			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
+			MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());
 			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			
 			EventSchedule eventSchedule = new EventSchedule();
@@ -204,7 +204,7 @@ public class EventScheduleMgmtService
 		{
 			logger.trace("About to update eventSchedule record = "+eventScheduleid);
 			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
-			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());									
+			MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());									
 			operResp = eventScheduleComp.updateEventSchedule(formParams,eventScheduleid,principalUserId);
 			operResp.setSuccess(true);
 		}

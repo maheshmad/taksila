@@ -2,8 +2,6 @@ package com.taksila.veda.security;
 
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +12,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.db.dao.UserSessionDAO;
 import com.taksila.veda.db.dao.UsersDAO;
 import com.taksila.veda.email.EmailUtils;
@@ -23,8 +20,8 @@ import com.taksila.veda.model.api.security.v1_0.ResetPasswordResponse;
 import com.taksila.veda.model.api.security.v1_0.UserLoginResponse;
 import com.taksila.veda.model.db.security.v1_0.UserSession;
 import com.taksila.veda.model.db.usermgmt.v1_0.User;
-import com.taksila.veda.utils.AppEnvConfig;
 import com.taksila.veda.utils.CommonUtils;
+import com.taksila.veda.utils.SysAdminConfig;
 
 @Component
 @Scope(value="prototype")
@@ -245,7 +242,7 @@ public class UserAuthComponent
 	private void sendPasswordResetEmail(User user,String tempPassword) throws Exception
 	{
 		
-		String invitationUrl = AppEnvConfig.GENERAL_DOMAIN_ROOT;
+		String invitationUrl = SysAdminConfig.GENERAL_DOMAIN_ROOT;
 		String msg = "Hello "+user.getFirstName()+", <br /><br /><br />"
 				+ "Your password request has being processed. <br />"
 				+ "Please click below to login with your temporary password.<br /><br />"

@@ -1,11 +1,15 @@
 package com.taksila.servlet.utils;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
@@ -104,9 +108,9 @@ public class ServletUtils
 	        	"test".equals(p[i]) ||	        	
 	        	"stag".equals(p[i]))
 	        	continue;
-	        else if ("127".equals(p[i]) && StringUtils.contains(host,"127.0.0.1"))
+	        else if ("192".equals(p[i]))
 	        {
-	        	tenantDomain = "cloud"; /* to facilitate development on localhost */
+	        	tenantDomain = "demo"; /* to facilitate development on localhost */
 	        	break;
 	        }	
 	        else
@@ -174,4 +178,55 @@ public class ServletUtils
 	        }
 	        return null;
 	 }
+	 
+	 public static MultivaluedMap<String,String> getMultivaluedMap(Map<String,String[]> mapList) 
+		{
+			MultivaluedMap<String, String> multiMap = new MultivaluedHashMap<String,String>();
+			try
+			{			
+				for (String key : mapList.keySet()) 
+				{
+				    List<String> newList = new ArrayList<String>();
+				    /*
+				     * loop thru to save it into List
+				     */
+					String values[] = mapList.get(key);
+				    for (String val: values)
+				    {
+				    	newList.add(val);
+				    }
+				    multiMap.put(key, newList);
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			return multiMap;
+		}
+		
+		public static MultivaluedMap<String,String> getMultivaluedMapCopy(MultivaluedMap<String,String> mapList)
+		{
+			MultivaluedMap<String, String> multiMap = new MultivaluedHashMap<String,String>();
+			
+			try
+			{			
+				for (String key : mapList.keySet()) 
+				{
+				    /*
+				     * loop thru to save it into List
+				     */
+				    multiMap.put(key, mapList.get(key));
+					
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			return multiMap;
+		}
+	 
 }

@@ -83,7 +83,7 @@ public class ConfigService
 				
 				try 
 				{					
-					MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
+					MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());
 					logger.trace("Inside /api/config POST" );
 					String tenantId = ServletUtils.getSubDomain(uri);
 					ConfigComponent configComp = new ConfigComponent(tenantId);					

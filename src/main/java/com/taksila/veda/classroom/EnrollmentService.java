@@ -71,7 +71,7 @@ public class EnrollmentService
 		
 		try 
 		{
-			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
+			MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());
 			logger.trace("processing enrollment creation......size ="+formParams.size());
 			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			
@@ -161,7 +161,7 @@ public class EnrollmentService
 		UpdateEnrollmentResponse operResp = new UpdateEnrollmentResponse();				
 		try
 		{
-			MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
+			MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());
 			logger.trace("About to update enrollment record = "+enrollmentid);
 			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
 			Enrollment enrollment = new Enrollment();

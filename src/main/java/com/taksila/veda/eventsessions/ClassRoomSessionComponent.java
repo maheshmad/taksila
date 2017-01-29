@@ -3,6 +3,7 @@ package com.taksila.veda.eventsessions;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,6 +164,11 @@ public class ClassRoomSessionComponent
 			EventSchedule eventSchedule = eventScheduleMgmtComponent.getEventSchedule(evtScheId);
 			if (eventSchedule == null)
 				errors.add(CommonUtils.buildErr("eventScheduleId", "Event schedule id = "+evtScheId+" is not found in db!"));
+			/*
+			 * check if session already exists
+			 */
+			if (StringUtils.isNotBlank(eventSchedule.getEventSessionId()))
+				errors.add(CommonUtils.buildErr("eventSessionId", "Session already started for this event!"));			
 			/*
 			 * check if the userid is the owner of the schedule id
 			 */			

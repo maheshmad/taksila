@@ -91,7 +91,7 @@ public class UserService
 				CreateNewUserResponse operResp = new CreateNewUserResponse();
 				try 
 				{					
-					MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());
+					MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());
 					UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);						
 					operResp = userComp.createNewUser(formParams); 
 					if (operResp.getErrorInfo() == null)
@@ -237,7 +237,7 @@ public class UserService
 			@PathParam("id") final String id, 
 			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
 	{    				
-		MultivaluedMap<String, String> formParams= CommonUtils.getMultivaluedMap(request.getParameterMap());	
+		MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());	
 		executor.execute(new Runnable() 
 		{
 			public void run() 

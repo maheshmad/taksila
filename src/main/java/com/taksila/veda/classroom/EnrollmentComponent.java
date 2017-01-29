@@ -223,6 +223,7 @@ public class EnrollmentComponent
 				{
 					resp.setStatus(StatusType.SUCCESS);
 					resp.setMsg("Successfully enrolled for user = "+req.getEnrollment().getUserRecordId()+" in classroom "+req.getEnrollment().getClassroomid());
+					resp.setEnrollment(enrolled);
 				}
 				else
 				{
@@ -266,7 +267,7 @@ public class EnrollmentComponent
 				if (updateSucceded)
 				{
 					resp.setStatus(StatusType.SUCCESS);
-					resp.setEnrollment(req.getEnrollment());
+					resp.setEnrollment(enrollmentDAO.getEnrollmentById(req.getEnrollment().getId()));
 					resp.setMsg("Successfully updated enrollment for user = "+req.getEnrollment().getUserRecordId());
 				}
 				else
