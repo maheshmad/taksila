@@ -12,8 +12,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import com.taksila.servlet.utils.ServletUtils;
-import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionRequest;
-import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionResponse;
 import com.taksila.veda.socket.services.SocketEvent;
 import com.taksila.veda.socket.services.SocketEvent.SocketEventType;
 import com.taksila.veda.utils.CommonUtils;
@@ -28,14 +26,13 @@ public class EventSessionController
 	
 	static Logger logger = LogManager.getLogger(ServletUtils.class.getName());
 	
-	@MessageMapping("/topic/sessionmessages/{eventSessionid}")	
-	@SendTo("/topic/sessionmessages/{eventSessionid}")
-	public SocketEvent messageHandler(StompHeaderAccessor accessor,SimpMessageHeaderAccessor headerAccessor, SocketEvent eventMsg)
+	@MessageMapping("/topic/sessionmessages/{eventSessionId}")	
+	@SendTo("/topic/sessionmessages/{eventSessionId}")
+	public SocketEvent messageHandler(StompHeaderAccessor accessor,SimpMessageHeaderAccessor headerAccessor, @DestinationVariable String eventSessionId, SocketEvent eventMsg)
 	{		
 		System.out.println("socket event recived ..."+CommonUtils.toJson(eventMsg)+" , full header = "+CommonUtils.toJson(accessor));
 		String tenantId = ServletUtils.getSubDomain(accessor.getSessionAttributes());
-		ClassRoomSessionComponent classRoomSessionComponent = applicationContext.getBean(ClassRoomSessionComponent.class,tenantId);
-//		Principal principal = headerAccessor.getUser();
+		String userId = headerAccessor.getUser().getName();
 		/*
 		 * all event drive socket events needs to reply back to acknowledge 
 		 * the message and include the response
@@ -49,7 +46,7 @@ public class EventSessionController
 			switch (eventMsg.getType())
 			{
 				case ACTION:
-					break;
+					return this.handleAction(tenantId,userId,eventSessionId,eventMsg);
 				case CONNECT_SUCCESS:
 					break;
 				case DATA:
@@ -57,24 +54,9 @@ public class EventSessionController
 				case DISCONNECTED:
 					break;
 				case ERROR:
-					break;
-				case ACTION_SESSION_START:
-					StartEventSessionRequest startEventSessionRequest = new StartEventSessionRequest();
-//					startEventSessionRequest.setEventScheduleId(eventSessionid);
-//					startEventSessionRequest.setUserRecordId(value);
-					StartEventSessionResponse startEventSessionResponse = classRoomSessionComponent.startEventSession(startEventSessionRequest);
-					if (startEventSessionResponse != null &&
-						startEventSessionResponse.getErrorInfo() != null && 
-						startEventSessionResponse.getErrorInfo().getErrors().isEmpty())	
-					{
-						eventMsgReply.setType(SocketEventType.ACTION_SUCCESS);
-					}
-					else
-						eventMsgReply.setMsg(startEventSessionResponse.getErrorInfo().getErrors().get(0).getErrorMsg());
-						
-					break;
+					break;					
 				default:
-					break;
+					return this.handleAction(tenantId,userId,eventSessionId,eventMsg);	
 				
 			}
 		}
@@ -93,58 +75,134 @@ public class EventSessionController
 	 * @param eventScheduleId
 	 * @param eventMsg
 	 * @return
-	 */
-	
-	@MessageMapping("/topic/start/session/{eventScheduleId}")	
-	@SendTo("/topic/general_app_message_topic")
-	public SocketEvent startSessionMessageHandler(StompHeaderAccessor accessor,SimpMessageHeaderAccessor headerAccessor, @DestinationVariable String eventScheduleId, SocketEvent eventMsg)
+	 */	
+	private SocketEvent handleAction(String tenantId, String userid, String eventScheduleId, SocketEvent eventMsg)
 	{				
-		System.out.println("socket event recived ..."+CommonUtils.toJson(eventMsg)+ " event schedule id = "+eventScheduleId+" , full header = "+CommonUtils.toJson(accessor));
+		System.out.println("socket event recived ..."+CommonUtils.toJson(eventMsg)+ " event schedule id = "+eventScheduleId);
 		
-		String tenantId = ServletUtils.getSubDomain(accessor.getSessionAttributes());
-		ClassRoomSessionComponent classRoomSessionComponent = applicationContext.getBean(ClassRoomSessionComponent.class,tenantId);
-//		System.out.println("socket event headers in  startSessionMessageHandler..."+CommonUtils.toJson(headerAccessor));
-//		Principal principal = headerAccessor.getUser();
 		/*
 		 * all event drive socket events needs to reply back to acknowledge 
 		 * the message and include the response
 		 * 
 		 */
-		SocketEvent eventMsgReply = new SocketEvent(); 
-		eventMsgReply.setType(SocketEventType.ACTION_FAILED);		
+		eventMsg.setFrom(userid);
 		
-		try
-		{
-			
-			StartEventSessionRequest startEventSessionRequest = new StartEventSessionRequest();
-			startEventSessionRequest.setUserRecordId(headerAccessor.getUser().getName());
-			startEventSessionRequest.setEventScheduleId(eventScheduleId);
-//					startEventSessionRequest.setUserRecordId(value);
-			logger.trace("about to start a session = "+CommonUtils.toJson(startEventSessionRequest)+" tenantid = "+tenantId);
-
-			StartEventSessionResponse startEventSessionResponse = classRoomSessionComponent.startEventSession(startEventSessionRequest);
-			logger.trace("response from session start = "+CommonUtils.toJson(startEventSessionResponse));
-			if (startEventSessionResponse != null &&
-				startEventSessionResponse.getErrorInfo() != null && 
-				startEventSessionResponse.getErrorInfo().getErrors().isEmpty())	
-			{
-				eventMsgReply.setType(SocketEventType.ACTION_SUCCESS);
-				eventMsgReply.setMsg("Event started at "+startEventSessionResponse.getEventSession().getJoiningDateTime());
-			}
-			else
-				eventMsgReply.setMsg(startEventSessionResponse.getErrorInfo().getErrors().get(0).getErrorMsg());
-												
-		}
-		catch(Exception ex)
-		{
-			ex.printStackTrace();
-			eventMsgReply.setMsg(ex.getMessage());
-		}
-		
-		System.out.println("Sending back reply"+CommonUtils.toJson(eventMsgReply));
-		
-		return eventMsgReply;		
+		return eventMsg;
 	}
+	
+	
+	
+//	/**
+//	 * 
+//	 * @param headerAccessor
+//	 * @param eventScheduleId
+//	 * @param eventMsg
+//	 * @return
+//	 */	
+//	private SocketEvent startSessionMessageHandler(String tenantId, String userid, String eventScheduleId, SocketEvent eventMsg)
+//	{				
+//		System.out.println("socket event recived ..."+CommonUtils.toJson(eventMsg)+ " event schedule id = "+eventScheduleId);
+//		
+//		ClassRoomSessionComponent classRoomSessionComponent = applicationContext.getBean(ClassRoomSessionComponent.class,tenantId);
+//		/*
+//		 * all event drive socket events needs to reply back to acknowledge 
+//		 * the message and include the response
+//		 * 
+//		 */
+//		SocketEvent eventMsgReply = new SocketEvent(); 
+//		eventMsgReply.setType(SocketEventType.ACTION_FAILED);		
+//		
+//		try
+//		{
+//			
+//			StartEventSessionRequest startEventSessionRequest = new StartEventSessionRequest();
+//			startEventSessionRequest.setUserRecordId(userid);
+//			startEventSessionRequest.setEventScheduleId(eventScheduleId);
+//			logger.trace("about to start a session = "+CommonUtils.toJson(startEventSessionRequest)+" tenantid = "+tenantId);
+//
+//			StartEventSessionResponse startEventSessionResponse = classRoomSessionComponent.startEventSession(startEventSessionRequest);
+//			logger.trace("response from session start = "+CommonUtils.toJson(startEventSessionResponse));
+//			if (startEventSessionResponse != null &&
+//				startEventSessionResponse.getErrorInfo() != null && 
+//				startEventSessionResponse.getErrorInfo().getErrors().isEmpty())	
+//			{
+//				eventMsgReply.setType(SocketEventType.ACTION_SUCCESS);
+//				eventMsgReply.setMsg("Event started at "+startEventSessionResponse.getEventSession().getJoiningDateTime());
+//			}
+//			else
+//				eventMsgReply.setMsg(startEventSessionResponse.getErrorInfo().getErrors().get(0).getErrorMsg());
+//												
+//		}
+//		catch(Exception ex)
+//		{
+//			ex.printStackTrace();
+//			eventMsgReply.setMsg(ex.getMessage());
+//		}
+//		
+//		System.out.println("Sending back reply"+CommonUtils.toJson(eventMsgReply));
+//		
+//		return eventMsgReply;		
+//	}
+//	
+//	
+//	/**
+//	 * 
+//	 * @param headerAccessor
+//	 * @param eventScheduleId
+//	 * @param eventMsg
+//	 * @return
+//	 * @throws Exception 
+//	 */
+//	private SocketEvent joinSessionMessageHandler(String tenantId, String userid, String eventSessionId, SocketEvent eventMsg) throws Exception
+//	{				
+//		System.out.println("socket event recived ..."+CommonUtils.toJson(eventMsg)+ " event session id = "+eventSessionId);	
+//		ClassRoomSessionComponent classRoomSessionComponent = applicationContext.getBean(ClassRoomSessionComponent.class,tenantId);
+//		UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);
+//		GetUserResponse getUserResp = userComp.getUser(userid);
+//		if(getUserResp == null || getUserResp.getUser() == null)
+//		{
+//			throw new Exception("SECURITY VIOLATION! - Unauthenticated userid = "+userid);			
+//		}
+//		
+//		String userRecordId = getUserResp.getUser().getId();
+//		/*
+//		 * all event drive socket events needs to reply back to acknowledge 
+//		 * the message and include the response
+//		 * 
+//		 */
+//		SocketEvent eventMsgReply = new SocketEvent(); 
+//		eventMsgReply.setType(SocketEventType.ACTION_FAILED);		
+//		
+//		try
+//		{			
+//			JoinEventSessionRequest joinEventSessionRequest = new JoinEventSessionRequest();
+//			joinEventSessionRequest.setUserRecordId(userRecordId);
+//			joinEventSessionRequest.setEventSessionId(eventSessionId);
+//			logger.trace("about to join a session = "+CommonUtils.toJson(joinEventSessionRequest)+" tenantid = "+tenantId);
+//
+//			JoinEventSessionResponse joinEventSessionResponse = classRoomSessionComponent.joinSession(joinEventSessionRequest);
+//			logger.trace("response from session start = "+CommonUtils.toJson(joinEventSessionResponse));
+//			if (joinEventSessionResponse != null &&
+//				joinEventSessionResponse.getErrorInfo() != null && 
+//				joinEventSessionResponse.getErrorInfo().getErrors().isEmpty())	
+//			{
+//				eventMsgReply.setType(SocketEventType.ACTION_SUCCESS);
+//				eventMsgReply.setMsg("Event started at "+joinEventSessionResponse.getEventSession().getJoiningDateTime());
+//			}
+//			else
+//				eventMsgReply.setMsg(joinEventSessionResponse.getErrorInfo().getErrors().get(0).getErrorMsg());
+//												
+//		}
+//		catch(Exception ex)
+//		{
+//			ex.printStackTrace();
+//			eventMsgReply.setMsg(ex.getMessage());
+//		}
+//		
+//		System.out.println("Sending back reply"+CommonUtils.toJson(eventMsgReply));
+//		
+//		return eventMsgReply;		
+//	}
 	
 	
 	

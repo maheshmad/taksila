@@ -98,44 +98,44 @@ public class EventScheduleMgmtService
 	/**
 	 * 	 
 	 */
-	@POST	
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@ManagedAsync
-	@Path("{eventScheduleid}/session/{eventSessionId}")
-    public void updateSessionId(@Context HttpServletRequest request,@Context HttpServletResponse response,
-    		@PathParam("eventScheduleid") String eventScheduleid,
-    		@PathParam("eventSessionId") String eventSessionId,
-    		@Context UriInfo uri,	
-    		@Suspended final AsyncResponse asyncResp) 
-    {    	
-		String tenantId = ServletUtils.getSubDomain(uri);
-		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
-		UpdateEventScheduleSessionIdResponse operResp = new UpdateEventScheduleSessionIdResponse();
-		
-		logger.trace("processing updateSessionId ..");
-		try 
-		{
-			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
-									
-			UpdateEventScheduleSessionIdRequest req = new UpdateEventScheduleSessionIdRequest();
-			req.setUserRecordId(principalUserId);
-			req.setEventScheduleId(eventScheduleid);
-			req.setEventSessionId(eventSessionId);
-			
-			operResp = eventScheduleComp.updateEventScheduleSessionId(req); 
-			operResp.setStatus(StatusType.SUCCESS);
-			operResp.setSuccess(true);
-		} 
-		catch (Exception ex) 
-		{		
-			ex.printStackTrace();
-			CommonUtils.handleExceptionForResponse(operResp, ex);
-		}
-		
-		asyncResp.resume(Response.ok(operResp).build());
-
-    }
+//	@POST	
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//	@ManagedAsync
+//	@Path("{eventScheduleid}/session/{eventSessionId}")
+//    public void updateSessionId(@Context HttpServletRequest request,@Context HttpServletResponse response,
+//    		@PathParam("eventScheduleid") String eventScheduleid,
+//    		@PathParam("eventSessionId") String eventSessionId,
+//    		@Context UriInfo uri,	
+//    		@Suspended final AsyncResponse asyncResp) 
+//    {    	
+//		String tenantId = ServletUtils.getSubDomain(uri);
+//		EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
+//		UpdateEventScheduleSessionIdResponse operResp = new UpdateEventScheduleSessionIdResponse();
+//		
+//		logger.trace("processing updateSessionId ..");
+//		try 
+//		{
+//			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
+//									
+//			UpdateEventScheduleSessionIdRequest req = new UpdateEventScheduleSessionIdRequest();
+//			req.setUserRecordId(principalUserId);
+//			req.setEventScheduleId(eventScheduleid);
+//			req.setEventSessionId(eventSessionId);
+//			
+//			operResp = eventScheduleComp.updateEventScheduleSessionId(req); 
+//			operResp.setStatus(StatusType.SUCCESS);
+//			operResp.setSuccess(true);
+//		} 
+//		catch (Exception ex) 
+//		{		
+//			ex.printStackTrace();
+//			CommonUtils.handleExceptionForResponse(operResp, ex);
+//		}
+//		
+//		asyncResp.resume(Response.ok(operResp).build());
+//
+//    }
 	
 	
 	

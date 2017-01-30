@@ -3,7 +3,6 @@ package com.taksila.veda.eventsessions;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +11,24 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.taksila.veda.db.dao.EnrollmentDAO;
 import com.taksila.veda.db.eventsessions.EventSessionsRepository;
 import com.taksila.veda.eventschedulemgmt.EventScheduleMgmtComponent;
 import com.taksila.veda.model.api.base.v1_0.Err;
 import com.taksila.veda.model.api.base.v1_0.ErrorInfo;
+import com.taksila.veda.model.api.classroom.v1_0.Enrollment;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleRequest;
+import com.taksila.veda.model.api.event_session.v1_0.JoinEventSessionRequest;
+import com.taksila.veda.model.api.event_session.v1_0.JoinEventSessionResponse;
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionRequest;
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionResponse;
+import com.taksila.veda.model.api.usermgmt.v1_0.GetUserResponse;
+import com.taksila.veda.model.db.classroom.v1_0.EnrollmentStatusType;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventSchedule;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventStatusType;
 import com.taksila.veda.model.db.event_session.v1_0.EventSession;
 import com.taksila.veda.socket.services.SocketEvent;
+import com.taksila.veda.usermgmt.UserComponent;
 import com.taksila.veda.utils.CommonUtils;
 
 
@@ -164,11 +170,16 @@ public class ClassRoomSessionComponent
 			EventSchedule eventSchedule = eventScheduleMgmtComponent.getEventSchedule(evtScheId);
 			if (eventSchedule == null)
 				errors.add(CommonUtils.buildErr("eventScheduleId", "Event schedule id = "+evtScheId+" is not found in db!"));
+			else
+			{
+				if (eventSchedule.getEventStatus().equals(EventStatusType.IN_PROGRESS))
+					errors.add(CommonUtils.buildErr("eventScheduleId", "Event schedule id = "+evtScheId+" already started! You will be redirected to the session!"));
+			}
 			/*
 			 * check if session already exists
 			 */
-			if (StringUtils.isNotBlank(eventSchedule.getEventSessionId()))
-				errors.add(CommonUtils.buildErr("eventSessionId", "Session already started for this event!"));			
+//			if (StringUtils.isNotBlank(eventSchedule.getEventSessionId()))
+//				errors.add(CommonUtils.buildErr("eventSessionId", "Session already started for this event!"));			
 			/*
 			 * check if the userid is the owner of the schedule id
 			 */			
@@ -200,10 +211,10 @@ public class ClassRoomSessionComponent
 				/*
 				 * update the schedule db
 				 */
-				eventSchedule.setEventSessionId(eventSessionId);
 				eventSchedule.setEventStatus(EventStatusType.IN_PROGRESS);
+				eventSchedule.setEventSessionId(eventSessionId);
 				UpdateEventScheduleRequest updateEventScheduleReq = new UpdateEventScheduleRequest();
-				updateEventScheduleReq.setEventSchedule(eventSchedule);
+				updateEventScheduleReq.setEventSchedule(eventSchedule);				
 				updateEventScheduleReq.setUserRecordId(userRecid);				
 				eventScheduleMgmtComponent.updateEventSchedule(updateEventScheduleReq);
 			}
@@ -230,6 +241,97 @@ public class ClassRoomSessionComponent
 		
 	}
 	
+	
+	public JoinEventSessionResponse joinSession(JoinEventSessionRequest joinEventSessionRequest) 
+	{
+		logger.trace("inside joinEventSession!!!");
+		EventSessionsRepository eventSessionsRepository = applicationContext.getBean(EventSessionsRepository.class,this.tenantId);
+		EnrollmentDAO enrollmentDAO = applicationContext.getBean(EnrollmentDAO.class,this.tenantId);
+		UserComponent userComp = applicationContext.getBean(UserComponent.class,tenantId);
+		
+		EventScheduleMgmtComponent eventScheduleMgmtComponent = applicationContext.getBean(EventScheduleMgmtComponent.class,this.tenantId);
+				
+		JoinEventSessionResponse joinEventSessionResponse = new JoinEventSessionResponse();
+		String eventSessionId = joinEventSessionRequest.getEventSessionId();
+		String userid = joinEventSessionRequest.getUserRecordId();	
+		GetUserResponse getUserResp = userComp.getUser(userid);
+		String userRecordId = getUserResp.getUser().getId();
+		
+		SocketEvent eventMsg = new SocketEvent(); 		
+		eventMsg.setId(eventSessionId);;		
+		/*
+		 * save the session event
+		 */
+		try 
+		{			
+			/*
+			 * Perform validations			
+			 *   
+			 */
+			joinEventSessionResponse.setErrorInfo(new ErrorInfo());						
+			List<Err> errors = joinEventSessionResponse.getErrorInfo().getErrors();
+			/*
+			 * check is its a valid scheduled event
+			 */
+			EventSchedule eventSchedule = eventScheduleMgmtComponent.getEventScheduleBySessionId(eventSessionId);
+			if (eventSchedule == null)
+				errors.add(CommonUtils.buildErr("eventSessionId", "Event schedule id = "+eventSessionId+" is not found in db!"));
+			else
+			{
+				/*
+				 * check if session has started
+				 */
+				if (!eventSchedule.getEventStatus().equals(EventStatusType.IN_PROGRESS))
+					errors.add(CommonUtils.buildErr("eventSessionId", "Session has not started , schedule is currently = "+eventSchedule.getEventStatus().name()));			
+				/*
+				 * check if the userid is enrolled in the class
+				 */			
+				Enrollment enrollment = enrollmentDAO.getEnrollmentByUserAndClassroom(userRecordId, eventSchedule.getClassroomid());
+				if (enrollment == null)
+					errors.add(CommonUtils.buildErr("eventSessionId", "User id = "+userRecordId+", is not enrolled for this class! Please contact your Admin"));
+				
+				if (enrollment != null && !enrollment.getEnrollStatus().equals(EnrollmentStatusType.ACTIVE))
+					errors.add(CommonUtils.buildErr("eventSessionId", "User id = "+userRecordId+" enrollment status is "+enrollment.getEnrollStatus().name()+"! Please contact your Admin"));
+			}
+			/*
+			 * check if validations passed
+			 */
+			if (joinEventSessionResponse.getErrorInfo().getErrors() != null &&
+					!joinEventSessionResponse.getErrorInfo().getErrors().isEmpty())
+			{
+				return joinEventSessionResponse;
+			}
+			
+			/*
+			 * since validations passed, now 
+			 * save the event session in db and update it in eventschedule 
+			 */
+			logger.trace("validations passed inside joinEventSession!!!");
+
+			EventSession newEventSession = new EventSession();
+			newEventSession.setUserRecordId(userid);	
+			newEventSession.setEventSessionId(eventSessionId);
+			Boolean saveResult = eventSessionsRepository.save(newEventSession);
+			if (saveResult)
+			{
+				joinEventSessionResponse.setEventSession(newEventSession);	
+			}
+			else
+				joinEventSessionResponse.setErrorInfo(CommonUtils.buildErrorInfo("error", "Error while joining the session! Please retry later or contact support!"));
+
+			
+		} 
+		catch (Exception e) 
+		{		
+			e.printStackTrace();
+			joinEventSessionResponse.setErrorInfo(CommonUtils.buildErrorInfo(e));			
+		}		
+		
+		
+		return joinEventSessionResponse;
+		
+		
+	}
 	
 	public String generateEventSessionId(String eventScheduleId, String userid)
 	{		

@@ -42,7 +42,7 @@ public class ApplicationApiConfig extends ResourceConfig
 		register(SlideService.class);
 		register(EventScheduleMgmtService.class);
 		register(UserAuthService.class);
-		
+		register(ClassroomService.class);
 		
 		packages("com.taksila.veda");
 	}

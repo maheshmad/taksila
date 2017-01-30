@@ -104,11 +104,11 @@ public class EventScheduleMgmtComponent
 		return resp;
 	}
 	
-//	/**
-//	 * 
-//	 * @param req
-//	 * @return
-//	 */
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 */
 //	public SearchEventScheduleResponse searchEventScheduleByUser(SearchEventScheduleRequest req)
 //	{
 //		SearchEventScheduleResponse resp = new SearchEventScheduleResponse();
@@ -156,6 +156,26 @@ public class EventScheduleMgmtComponent
 		}
 		return resp;
 	}
+	
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 */
+	public EventSchedule getEventScheduleBySessionId(String sessionId)
+	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		try 
+		{
+			return eventScheduleDAO.getEventScheduleBySessionId(sessionId);			
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * 
