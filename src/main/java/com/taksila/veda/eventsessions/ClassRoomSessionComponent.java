@@ -204,6 +204,7 @@ public class ClassRoomSessionComponent
 			EventSession newEventSession = new EventSession();
 			newEventSession.setUserRecordId(userRecid);	
 			newEventSession.setEventSessionId(eventSessionId);
+			newEventSession.setPresenter(true);
 			Boolean saveResult = eventSessionsRepository.save(newEventSession);
 			if (saveResult)
 			{
@@ -311,6 +312,13 @@ public class ClassRoomSessionComponent
 			EventSession newEventSession = new EventSession();
 			newEventSession.setUserRecordId(userid);	
 			newEventSession.setEventSessionId(eventSessionId);
+			
+			/*
+			 * check if the userid is the owner of the schedule id
+			 */			
+			if (eventScheduleMgmtComponent.isOwnerOfSchedule(eventSchedule, userid, null))
+				newEventSession.setPresenter(true);
+			
 			Boolean saveResult = eventSessionsRepository.save(newEventSession);
 			if (saveResult)
 			{
