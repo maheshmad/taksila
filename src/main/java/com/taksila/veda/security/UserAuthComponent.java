@@ -35,19 +35,17 @@ public class UserAuthComponent
 	
 	@Autowired
 	JwtTokenUtil jwtTokenUtil;
-		
-		
-	
+			
 	private String dateFormat = "MM/dd/yyyy HH:mm:ss z";
 	static Logger logger = LogManager.getLogger(UserAuthComponent.class.getName());
 	
 	private String tenantId;
 	
+	@Autowired
 	public UserAuthComponent(@Value("tenantId") String tenantId) 
 	{
-		logger.trace("building UserAuthComponent for tenantId = "+tenantId);
-		this.tenantId = tenantId;
-		
+		logger.trace(">>>>>>>>>>>>>>>> Creating UserAuthComponent bean for tenant "+tenantId);		
+		this.tenantId = tenantId;		
 	}
 	
 	public UserLoginResponse getLoggedInUser(String sessionid)

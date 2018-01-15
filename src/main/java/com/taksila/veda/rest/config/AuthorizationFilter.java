@@ -3,7 +3,6 @@ package com.taksila.veda.rest.config;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
@@ -56,6 +54,7 @@ public class AuthorizationFilter implements ContainerRequestFilter
 	{
 		skipAuthenticationList.add("/login");
 		skipAuthenticationList.add("/logout");
+		skipAuthenticationList.add("/auth/forgotpassword");
 	}
 	
 	

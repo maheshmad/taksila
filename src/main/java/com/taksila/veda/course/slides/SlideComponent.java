@@ -48,8 +48,10 @@ public class SlideComponent
 	static Logger logger = LogManager.getLogger(SlideComponent.class.getName());	
 	private String tenantId;
 	
+	@Autowired
 	public SlideComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating SlideComponent bean for tenant "+tenantId);		
 		this.tenantId = tenantId;		
 	}
 	

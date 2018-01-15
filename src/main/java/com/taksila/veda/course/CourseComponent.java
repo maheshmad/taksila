@@ -39,8 +39,10 @@ public class CourseComponent
 	static Logger logger = LogManager.getLogger(CourseComponent.class.getName());
 	private String tenantId;
 	
+	@Autowired
 	public CourseComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating CourseComponent bean for tenant "+tenantId);		
 		this.tenantId = tenantId;	
 	}
 	

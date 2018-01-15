@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
-import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.CreateEventScheduleResponse;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.DeleteEventScheduleRequest;
@@ -37,8 +36,6 @@ import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.GetEventScheduleRespo
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.SearchEventScheduleRequest;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.SearchEventScheduleResponse;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleResponse;
-import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleSessionIdRequest;
-import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleSessionIdResponse;
 import com.taksila.veda.model.db.event_schedule_mgmt.v1_0.EventSchedule;
 import com.taksila.veda.security.SecurityUtils;
 import com.taksila.veda.utils.CommonUtils;

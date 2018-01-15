@@ -37,8 +37,10 @@ public class ClassroomComponent
 	private String tenantId;
 	static Logger logger = LogManager.getLogger(ClassroomComponent.class.getName());
 	
+	@Autowired
 	public ClassroomComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating ClassroomComponent bean for tenant "+tenantId);
 		this.tenantId = tenantId;	
 	}
 			

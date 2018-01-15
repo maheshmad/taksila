@@ -54,8 +54,10 @@ public class UserComponent
 
 	private String tenantId;
 	
+	@Autowired
 	public UserComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating UserComponent bean for tenant = "+tenantId);
 		this.tenantId = tenantId;
 		
 	}

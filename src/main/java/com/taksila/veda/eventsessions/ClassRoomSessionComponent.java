@@ -43,10 +43,12 @@ public class ClassRoomSessionComponent
 	ApplicationContext applicationContext;	
 	String tenantId;
 	
+	@Autowired
 	public ClassRoomSessionComponent(@Value("tenantId") String tenantId)
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating ClassRoomSessionComponent bean for tenant "+tenantId);		
 		this.tenantId = tenantId;
-		logger.trace("building ClassRoomSessionComponent for tenantid = "+tenantId);
+		
 	}
 	
 //	public SocketEvent broadcastJoinMessage(String eventSessionId,SocketEvent eventMsg)

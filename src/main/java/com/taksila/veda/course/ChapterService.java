@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
-import com.taksila.veda.classroom.ClassroomComponent;
 import com.taksila.veda.model.api.course.v1_0.Chapter;
 import com.taksila.veda.model.api.course.v1_0.CreateChapterRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateChapterResponse;

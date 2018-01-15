@@ -47,8 +47,10 @@ public class EnrollmentComponent
 	private String tenantId;
 	static Logger logger = LogManager.getLogger(EnrollmentComponent.class.getName());
 	
+	@Autowired
 	public EnrollmentComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating bean for tenant "+tenantId);
 		this.tenantId = tenantId;	
 	}
 			

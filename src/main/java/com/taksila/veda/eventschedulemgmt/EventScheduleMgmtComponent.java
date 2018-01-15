@@ -3,7 +3,6 @@ package com.taksila.veda.eventschedulemgmt;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -55,8 +54,10 @@ public class EventScheduleMgmtComponent
 	static Logger logger = LogManager.getLogger(EventScheduleMgmtComponent.class.getName());
 	private String tenantId;
 	
+	@Autowired
 	public EventScheduleMgmtComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating EventScheduleMgmtComponent bean for tenant "+tenantId);		
 		this.tenantId = tenantId;		
 	}
 			

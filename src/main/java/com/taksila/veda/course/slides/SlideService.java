@@ -31,7 +31,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.taksila.servlet.utils.ServletUtils;
-import com.taksila.veda.course.ChapterComponent;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideRequest;

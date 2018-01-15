@@ -37,8 +37,10 @@ public class ChapterComponent
 	private String tenantId;
 	static Logger logger = LogManager.getLogger(ChapterComponent.class.getName());
 	
+	@Autowired
 	public ChapterComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating ChapterComponent bean for tenant "+tenantId);		
 		this.tenantId = tenantId;	
 	}
 			

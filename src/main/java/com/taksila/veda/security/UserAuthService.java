@@ -2,7 +2,6 @@ package com.taksila.veda.security;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -26,18 +25,14 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
-import com.taksila.veda.db.dao.UserSessionDAO;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.security.v1_0.ResetPasswordResponse;
 import com.taksila.veda.model.api.security.v1_0.UserLoginResponse;
-import com.taksila.veda.model.db.security.v1_0.UserSession;
 import com.taksila.veda.utils.CommonUtils;
-import com.taksila.veda.utils.UAgentInfo;
 
 @Component
 @Path("/auth")

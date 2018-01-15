@@ -33,10 +33,11 @@ public class ConfigComponent
 	
 	@Autowired
 	ApplicationContext applicationContext;
-			
+	
+	@Autowired
 	public ConfigComponent(@Value("tenantId")  String tenantId) 
 	{
-		logger.trace("About to load configuration from database for tenantid = "+tenantId);		
+		logger.trace(">>>>>>>>>>>>>>>> Creating ConfigComponent bean for tenant "+tenantId);		
 		this.tenantId = tenantId;
 	}
 	

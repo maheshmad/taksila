@@ -38,8 +38,10 @@ public class TopicComponent
 	static Logger logger = LogManager.getLogger(TopicComponent.class.getName());
 	private String tenantId;
 	
+	@Autowired
 	public TopicComponent(@Value("tenantId") String tenantId) 
 	{
+		logger.trace(">>>>>>>>>>>>>>>> Creating TopicComponent bean for tenant "+tenantId);		
 		this.tenantId = tenantId;
 	}
 	

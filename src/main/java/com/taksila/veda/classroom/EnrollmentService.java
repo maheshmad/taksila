@@ -1,7 +1,5 @@
 package com.taksila.veda.classroom;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -27,7 +25,6 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.classroom.v1_0.CreateEnrollmentRequest;
