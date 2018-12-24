@@ -28,13 +28,11 @@
 			<groupId>com.taksila.veda.model</groupId>
 			<artifactId>veda-model</artifactId>
 			 <version>0.0.1-VM-SNAPSHOT</version>
-			 <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.taksila.veda.db</groupId>
 			<artifactId>veda-db</artifactId>
 			 <version>0.0.1-SNAPSHOT</version>
-			 <scope>provided</scope>
 		</dependency>
        <dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -248,7 +246,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>			
+				 <configuration>
+			        <jvmArguments>
+			            -Dhttps.protocols=TLSv1.1,TLSv1.2
+			        </jvmArguments>
+			    </configuration>
+			</plugin>						
 		</plugins>
 		
 	</build>

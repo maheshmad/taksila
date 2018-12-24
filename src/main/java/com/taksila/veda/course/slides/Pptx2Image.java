@@ -31,6 +31,7 @@ import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.taksila.veda.config.ConfigComponent;
@@ -49,17 +50,17 @@ import com.taksila.veda.utils.CommonUtils;
  * @author Yegor Kozlov
  */
 @Component
+@Scope(value="prototype")
 public class Pptx2Image 
 {
 	private static String baseDirectory = "C:\\files\\"; 
-	static Logger logger = LogManager.getLogger(SlideComponent.class.getName());	
+	static Logger logger = LogManager.getLogger(Pptx2Image.class.getName());	
 	
 	@Autowired
 	ApplicationContext applicationContext;
-	@Autowired
-	TenantConfigManager TenantConfigManager;
 	private String tenantId;
 	
+	@Autowired
 	public Pptx2Image(@Value("tenantId") String tenantId)
 	{
 		this.tenantId = tenantId;
@@ -134,7 +135,7 @@ public class Pptx2Image
     
     public String convertToImage(Pptx2ImageOptions options) throws IOException, Exception 
     {
-    	ConfigComponent config = TenantConfigManager.getTenantConfig(this.tenantId);
+        ConfigComponent configComp = applicationContext.getBean(ConfigComponent.class,this.tenantId);	
     	int i = 0;    
     	System.out.println("Processing " + options.filename +" and topicid "+options.topicid);
     	String tempFolderId = "";
@@ -175,7 +176,7 @@ public class Pptx2Image
          // read the .pptx file
 //         File f = new File(filename);
 //         InputStream st = new FileInputStream(f);
-         String filePath = config.getUserTempFilePath("slides",options.topicid)+"\\"+options.filename;
+         String filePath = configComp.getUserTempFilePath("slides",options.topicid)+"\\"+options.filename;
          File f = new File(filePath);
          if (!f.exists())
         	 throw new Exception("File "+options.filename+"not found ..");   

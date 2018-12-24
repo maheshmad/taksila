@@ -547,6 +547,8 @@ public class UserComponent
 	 */
 	private boolean sendInvitationEmail(User user,String tempPassword)
 	{
+        EmailUtils emailUtils = applicationContext.getBean(EmailUtils.class,this.tenantId);	
+
 		try
 		{
 			String invitationUrl = SysAdminConfig.GENERAL_DOMAIN_ROOT;
@@ -564,12 +566,11 @@ public class UserComponent
 					+ tempPassword  
 					+ "<br/></div>"
 					+ "You will be required to change your password on your first login.<br/><br/>"
-					+ "If you have any questions about your account, please feel free to reach us at support@xxxxxxxxx.com or call us on +1xxxxxx.<br/><br/>"
+					+ "If you have any questions about your account, please feel free to reach us at support@altaireworks or call us on +1xxxxxx.<br/><br/>"
 					+ "<address>"
 					+ "<br/>";
 			
-			EmailUtils emailUtil = new EmailUtils();
-			emailUtil.sendMail(this.tenantId,user.getEmailId(), "support@localhost.com", "Welcome", msg, null);
+			emailUtils.sendMail(user.getEmailId(), "support@altaireworks", "Welcome", msg, null);
 		}
 		catch(Exception ex)
 		{

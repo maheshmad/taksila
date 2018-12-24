@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.taksila.veda.config.TenantConfigManager;
 import com.taksila.veda.course.slides.Pptx2Image.Pptx2ImageOptions;
+import com.taksila.veda.db.dao.ConfigDAO;
 import com.taksila.veda.db.dao.SlidesDAO;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
 import com.taksila.veda.model.api.base.v1_0.SearchHitRecord;
@@ -40,11 +41,7 @@ public class SlideComponent
 {	
 	@Autowired
 	ApplicationContext applicationContext;
-	@Autowired
-	TenantConfigManager tenantConfigManager;	
-	@Autowired
-	Pptx2Image pptx2Image;
-	
+		
 	static Logger logger = LogManager.getLogger(SlideComponent.class.getName());	
 	private String tenantId;
 	
@@ -58,7 +55,8 @@ public class SlideComponent
 	public BaseResponse generateImagesFromPptx(String topicid, String uploadedfileid)
 	{    						
 		logger.trace("inside pptx to image converter");
-		
+		Pptx2Image pptx2Image = applicationContext.getBean(Pptx2Image.class,this.tenantId);
+
 		BaseResponse bResp = new BaseResponse(); 
 		try 
 		{

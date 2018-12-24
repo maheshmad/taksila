@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.config.ConfigComponent;
-import com.taksila.veda.config.TenantConfigManager;
 import com.taksila.veda.course.TopicComponent;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
 import com.taksila.veda.model.api.course.v1_0.GetTopicRequest;
@@ -48,8 +47,7 @@ public class SlidesPPTXUploadServlet extends HttpServlet
     
 	@Autowired
 	ApplicationContext applicationContext;
-	@Autowired
-	TenantConfigManager tenantConfigManager;
+	
 	
 	/**
      * @see HttpServlet#HttpServlet()
@@ -68,7 +66,7 @@ public class SlidesPPTXUploadServlet extends HttpServlet
         response.setContentType("application/json");        
         
         final String tenantId = ServletUtils.getSubDomain(request.getRequestURL().toString());
-        ConfigComponent tenantConfig = tenantConfigManager.getTenantConfig(tenantId);
+		ConfigComponent configComp = applicationContext.getBean(ConfigComponent.class,tenantId);	
         		
         UploadFileResponse fileUploadResp = new UploadFileResponse();
         OutputStream out = null;
@@ -83,7 +81,7 @@ public class SlidesPPTXUploadServlet extends HttpServlet
         	final Part filePart = request.getPart("slidecontent");
             final String fileName = System.currentTimeMillis()+ServletUtils.getFileName(filePart);           
         	String fileExtension = FilenameUtils.getExtension(fileName);
-        	final String path = tenantConfig.getUserTempFilePath("slides",topicid);
+        	final String path = configComp.getUserTempFilePath("slides",topicid);
         	/*
         	 * validation 
         	 */

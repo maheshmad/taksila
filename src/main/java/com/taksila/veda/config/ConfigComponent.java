@@ -24,7 +24,6 @@ import com.taksila.veda.utils.CommonUtils;
 
 @Component
 @Scope(value="prototype")
-@Lazy(value = true)
 public class ConfigComponent 
 {	
 	private static Logger logger = LogManager.getLogger(ConfigComponent.class.getName());
@@ -120,7 +119,6 @@ public class ConfigComponent
 	{
 		try
 		{
-//			ConfigDAO configDAO = new ConfigDAO();
 			ConfigDAO configDAO = applicationContext.getBean(ConfigDAO.class,tenantId);
 			configsMap = configDAO.getConfigsByRole(null);			
 		}		 
@@ -132,9 +130,9 @@ public class ConfigComponent
 	
 	public String getUserTempFilePath(String type, String additionalFolderId) 
 	{
-		String basePath = getConfig(ConfigId.TEMP_FILE_PATH);
+		String basePath = this.getConfig(ConfigId.TEMP_FILE_PATH);
 		basePath = StringUtils.removeEnd(basePath, "\\");
-		String dirPath = getConfig(ConfigId.TEMP_FILE_PATH)+"\\"+type+"\\";
+		String dirPath = this.getConfig(ConfigId.TEMP_FILE_PATH)+"\\"+type+"\\";
 		if (StringUtils.isNotBlank(additionalFolderId))
 			dirPath = dirPath + additionalFolderId+"\\";
 		boolean dirExits = new File(dirPath).mkdirs();

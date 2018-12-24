@@ -86,7 +86,7 @@ public class ConfigService
 					MultivaluedMap<String, String> formParams= ServletUtils.getMultivaluedMap(request.getParameterMap());
 					logger.trace("Inside /api/config POST" );
 					String tenantId = ServletUtils.getSubDomain(uri);
-					ConfigComponent configComp = new ConfigComponent(tenantId);					
+					ConfigComponent configComp = applicationContext.getBean(ConfigComponent.class,tenantId);			
 					List<Config> configs = new ArrayList<Config>();
 					/*
 					 * collect all form params
@@ -105,6 +105,10 @@ public class ConfigService
 							config.setId(enumConfigKey.name());
 							configs.add(config);
 						}
+						catch(IllegalArgumentException ill)
+						{
+							/* ignore this */
+						}
 						catch(Exception ex)
 						{
 							/*
@@ -112,7 +116,7 @@ public class ConfigService
 							 */
 							updateResp.setStatus(StatusType.INVALID);;
 							updateResp.setErrorInfo(CommonUtils.buildErrorInfo(key, "Is not a valid configuration key"));
-							updateResp.setMsg("Invalid configuration key found! Please check your input");
+							updateResp.setMsg("Invalid configuration key found! Please check your input: "+ex.getMessage());
 						}
 								
 					}

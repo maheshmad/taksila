@@ -29,10 +29,7 @@ public class UserAuthComponent
 {	
 	@Autowired
 	ApplicationContext applicationContext;
-	
-	@Autowired
-	EmailUtils emailUtils;
-	
+		
 	@Autowired
 	JwtTokenUtil jwtTokenUtil;
 			
@@ -239,27 +236,31 @@ public class UserAuthComponent
 	 */
 	private void sendPasswordResetEmail(User user,String tempPassword) throws Exception
 	{
-		
+        EmailUtils emailUtils = applicationContext.getBean(EmailUtils.class,this.tenantId);	
+
 		String invitationUrl = SysAdminConfig.GENERAL_DOMAIN_ROOT;
 		String msg = "Hello "+user.getFirstName()+", <br /><br /><br />"
 				+ "Your password request has being processed. <br />"
 				+ "Please click below to login with your temporary password.<br /><br />"
-				+ "<span style = \"padding-left:16%\">"
-				+ invitationUrl
-				+ "</span><br/><br/><br/>"
+				+ "	<span style = \"padding-left:16%\">"
+				+ 		invitationUrl
+				+ "	</span><br/><br/><br/>"
 				+ "Your credentials are below.<br /><br />"
 				+ "<div style = \"padding-left:20%\">"
-				+ "User Id : "
-				+ user.getUserId()
-				+ "<br/>Temporary Password : "
-				+ tempPassword  
-				+ "<br/></div>"
+				+ "		User Id : "
+				+ 			user.getUserId()
+				+ "		<br/>Temporary Password : "
+				+ 			tempPassword  
+				+ "		<br/>"
+				+ "</div>"
 				+ "You will be required to change your password on your first login.<br/><br/>"
-				+ "If you have any questions about your account, please feel free to reach us at support@xxxxxxxxx.com or call us on +1xxxxxx.<br/><br/>"
-				+ "<address>"
-				+ "<br/>";
+				+ "If you have any questions about your account, please feel free to reach us at support@altiareworks.com or call us on +1-309-533-2918.<br/><br/>"
+				+ "<br/>"
+				+ "Thanks,"
+				+ "Support Team "
+				+ "www.altaireworks.com";
 		
-		this.emailUtils.sendMail(this.tenantId, user.getEmailId(), "support@localhost.com", "Password Reset", msg, null);
+		emailUtils.sendSupportMail(user.getEmailId(), "Password Reset", msg, null);
 		
 		
 	}

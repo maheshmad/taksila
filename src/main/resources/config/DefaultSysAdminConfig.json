@@ -185,7 +185,7 @@
 						},
 
 						{
-							"name": "SUPPORT_RA_EMAIL_ID",
+							"name": "SUPPORT_EMAIL_ID",
 							"displayField": "Support Tenant Creation Email Id",
 							"value": "support.riskanalyst@intellectdesign.com",
 							"type": "TEXT"
