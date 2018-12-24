@@ -35,7 +35,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.taksila.veda.config.ConfigComponent;
-import com.taksila.veda.config.TenantConfigManager;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideRequest;
 import com.taksila.veda.model.api.course.v1_0.CreateSlideResponse;
 import com.taksila.veda.model.api.course.v1_0.GetSlideRequest;

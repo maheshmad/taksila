@@ -13,9 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.taksila.veda.config.TenantConfigManager;
 import com.taksila.veda.course.slides.Pptx2Image.Pptx2ImageOptions;
-import com.taksila.veda.db.dao.ConfigDAO;
 import com.taksila.veda.db.dao.SlidesDAO;
 import com.taksila.veda.model.api.base.v1_0.BaseResponse;
 import com.taksila.veda.model.api.base.v1_0.SearchHitRecord;
