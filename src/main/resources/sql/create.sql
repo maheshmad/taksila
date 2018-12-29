@@ -1,8 +1,10 @@
--- MySQL dump 10.13  Distrib 5.7.8-rc, for Win64 (x86_64)
+CREATE DATABASE  IF NOT EXISTS `xe1_demo_db` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `xe1_demo_db`;
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: xe1
+-- Host: localhost    Database: xe1_demo_db
 -- ------------------------------------------------------
--- Server version	5.7.8-rc-log
+-- Server version	5.7.21-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -31,7 +33,7 @@ CREATE TABLE `chapters` (
   `description` mediumtext,
   PRIMARY KEY (`id`,`courseid`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -88,7 +90,7 @@ CREATE TABLE `classroom` (
   `description` mediumtext,
   PRIMARY KEY (`classroomid`),
   UNIQUE KEY `id_UNIQUE` (`classroomid`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,7 +164,7 @@ CREATE TABLE `courses` (
   `description` mediumtext,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -239,10 +241,10 @@ CREATE TABLE `event_schedule` (
   `event_status` varchar(100) DEFAULT 'NOT_STARTED',
   `event_description` mediumtext,
   `updated_by` varchar(100) DEFAULT NULL,
-  `last_updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `event_session_id` varchar(255) DEFAULT NULL,
+  `last_updated_on` datetime DEFAULT CURRENT_TIMESTAMP,
+  `event_session_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`event_schedule_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -253,11 +255,12 @@ DROP TABLE IF EXISTS `event_sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `event_sessions` (
-  `event_sessions_id` varchar(255) NOT NULL,
-  `user_record_id` varchar(100) NOT NULL,
-  `joining_datetime` datetime DEFAULT CURRENT_TIMESTAMP,
+  `event_session_id` varchar(45) NOT NULL,
+  `user_record_id` varchar(45) DEFAULT NULL,
+  `joining_datetime` datetime DEFAULT NULL,
   `leaving_datetime` datetime DEFAULT NULL,
-  PRIMARY KEY (`event_sessions_id`,`user_record_id`)
+  `is_presenter` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`event_session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -283,7 +286,7 @@ CREATE TABLE `slides` (
   `topicid` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=631 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -302,7 +305,7 @@ CREATE TABLE `topics` (
   `description` mediumtext,
   PRIMARY KEY (`id`,`chapterid`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -413,10 +416,12 @@ CREATE TABLE `users` (
   `last_login_ip` varchar(100) DEFAULT NULL,
   `account_disabled` tinyint(1) DEFAULT '0',
   `account_deleted` tinyint(1) DEFAULT '0',
+  `related_to_user_record_id` int(10) DEFAULT NULL,
+  `relationship_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`user_record_id`),
   UNIQUE KEY `id_UNIQUE` (`user_record_id`),
   UNIQUE KEY `userid_UNIQUE` (`userid`)
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -428,4 +433,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-14 18:47:38
+-- Dump completed on 2018-12-29 10:20:15
