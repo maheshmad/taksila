@@ -258,12 +258,12 @@ public class EnrollmentService
 						
 			req.setRecordType("ENROLLMENT");
 			
-			if (StringUtils.isBlank(userRecordId))
+			if (StringUtils.isNotBlank(classroomid))
 			{
 				req.setQuery(classroomid);
 				searchResp = enrollmentComp.searchEnrollmentByClassroom(req);
 			}
-			else
+			else if (StringUtils.isNotBlank(userRecordId))
 			{
 				req.setQuery(userRecordId);
 				searchResp = enrollmentComp.searchEnrollmentByUserRecordid(req);

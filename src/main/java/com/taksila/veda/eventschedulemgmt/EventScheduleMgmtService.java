@@ -181,6 +181,45 @@ public class EventScheduleMgmtService
 	 * @param request
 	 * @param uri
 	 * @param eventScheduleid
+	 * @param resp
+	 * @param asyncResp
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ManagedAsync
+	@Path("/session/{sessionId}")
+	public void getEventScheduleSessionInfo(@Context HttpServletRequest request, @Context UriInfo uri,		
+			@PathParam("sessionId") String eventScheduleSessionId,
+			@Context HttpServletResponse resp,@Suspended final AsyncResponse asyncResp)
+	{    				
+		
+		GetEventScheduleResponse operResp = new GetEventScheduleResponse();
+		try 
+		{
+			GetEventScheduleRequest req = new GetEventScheduleRequest();
+			req.setEventSessionId(eventScheduleSessionId);
+			
+			String tenantId = ServletUtils.getSubDomain(uri);
+			EventScheduleMgmtComponent eventScheduleComp = applicationContext.getBean(EventScheduleMgmtComponent.class,tenantId);
+			operResp = eventScheduleComp.getEventScheduleBySessionId(req); 			
+			operResp.setSuccess(true);
+		} 
+		catch (Exception ex) 
+		{		
+			ex.printStackTrace();
+			CommonUtils.handleExceptionForResponse(operResp, ex);
+		}
+		
+		asyncResp.resume(Response.ok(operResp).build());
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @param request
+	 * @param uri
+	 * @param eventScheduleid
 	 * @param formParams
 	 * @param resp
 	 * @param asyncResp

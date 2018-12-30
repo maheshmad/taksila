@@ -21,6 +21,8 @@ import org.springframework.context.ApplicationContext;
 
 import com.taksila.servlet.utils.ServletUtils;
 import com.taksila.veda.model.api.base.v1_0.StatusType;
+import com.taksila.veda.model.api.event_session.v1_0.GetEventSessionFullDetailsResponse;
+import com.taksila.veda.model.api.event_session.v1_0.GetEventSessionRequest;
 import com.taksila.veda.model.api.event_session.v1_0.JoinEventSessionRequest;
 import com.taksila.veda.model.api.event_session.v1_0.JoinEventSessionResponse;
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionRequest;
@@ -147,6 +149,63 @@ public class ClassroomSessionService
 
     }
 	
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @param eventSessionId
+	 * @param uri
+	 * @param asyncResp
+	 */
+	@GET	
+	@Produces(MediaType.APPLICATION_JSON)	
+	@ManagedAsync
+	@Path("/details/{eventSessionId}")
+    public void getSessionFullDetails(@Context HttpServletRequest request,@Context HttpServletResponse response,
+    		@PathParam("eventSessionId") String eventSessionId,    	
+    		@Context UriInfo uri,	
+    		@Suspended final AsyncResponse asyncResp) 
+    {    	
+		String tenantId = ServletUtils.getSubDomain(uri);
+		ClassRoomSessionComponent classRoomSessionComponent = applicationContext.getBean(ClassRoomSessionComponent.class,tenantId);		
+		GetEventSessionFullDetailsResponse sessionFullDetailsResponse = new GetEventSessionFullDetailsResponse();
+		
+		logger.trace("processing getSessionFullDetails ..");
+		try 
+		{
+			String principalUserId = securityUtils.getLoggedInPrincipalUserid(tenantId, request);
+
+			
+			GetEventSessionRequest getEventSessionRequest = new GetEventSessionRequest();
+			getEventSessionRequest.setEventSessionId(eventSessionId);
+			getEventSessionRequest.setUserRecordId(principalUserId);
+			logger.trace("about to get full session details = "+CommonUtils.toJson(getEventSessionRequest)+" tenantid = "+tenantId);			
+			sessionFullDetailsResponse = classRoomSessionComponent.getSessionFullDetails(getEventSessionRequest);
+			logger.trace("response from getSessionFullDetails = "+CommonUtils.toJson(sessionFullDetailsResponse));
+			if (sessionFullDetailsResponse.getErrorInfo() != null && 
+					sessionFullDetailsResponse.getErrorInfo().getErrors() != null &&
+							sessionFullDetailsResponse.getErrorInfo().getErrors().isEmpty())
+			{
+				sessionFullDetailsResponse.setSuccess(true);
+				sessionFullDetailsResponse.setStatus(StatusType.SUCCESS);				
+			}
+			else
+			{
+				sessionFullDetailsResponse.setSuccess(false);
+				sessionFullDetailsResponse.setStatus(StatusType.INVALID);				
+			}	
+			
+		} 
+		catch (Exception ex) 
+		{		
+			ex.printStackTrace();
+			CommonUtils.handleExceptionForResponse(sessionFullDetailsResponse, ex);
+		}
+		
+		asyncResp.resume(Response.ok(sessionFullDetailsResponse).build());
+
+    }
 	
 	
 	

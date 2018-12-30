@@ -11,13 +11,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.taksila.veda.classroom.ClassroomComponent;
+import com.taksila.veda.db.dao.ClassroomDAO;
 import com.taksila.veda.db.dao.EnrollmentDAO;
 import com.taksila.veda.db.eventsessions.EventSessionsRepository;
 import com.taksila.veda.eventschedulemgmt.EventScheduleMgmtComponent;
 import com.taksila.veda.model.api.base.v1_0.Err;
 import com.taksila.veda.model.api.base.v1_0.ErrorInfo;
+import com.taksila.veda.model.api.classroom.v1_0.Classroom;
 import com.taksila.veda.model.api.classroom.v1_0.Enrollment;
 import com.taksila.veda.model.api.event_schedule_mgmt.v1_0.UpdateEventScheduleRequest;
+import com.taksila.veda.model.api.event_session.v1_0.GetEventSessionFullDetailsResponse;
+import com.taksila.veda.model.api.event_session.v1_0.GetEventSessionRequest;
 import com.taksila.veda.model.api.event_session.v1_0.JoinEventSessionRequest;
 import com.taksila.veda.model.api.event_session.v1_0.JoinEventSessionResponse;
 import com.taksila.veda.model.api.event_session.v1_0.StartEventSessionRequest;
@@ -342,6 +347,79 @@ public class ClassRoomSessionComponent
 		
 		
 	}
+	
+	/**
+	 * 
+	 * @param getEventSessionRequest
+	 * @return
+	 */
+	public GetEventSessionFullDetailsResponse getSessionFullDetails(GetEventSessionRequest getEventSessionRequest) 
+	{
+		logger.trace("inside getSessionFullDetails!!!");
+		EventSessionsRepository eventSessionsRepository = applicationContext.getBean(EventSessionsRepository.class,this.tenantId);
+		ClassroomDAO classroomDAO = applicationContext.getBean(ClassroomDAO.class,this.tenantId);
+		
+		EventScheduleMgmtComponent eventScheduleMgmtComponent = applicationContext.getBean(EventScheduleMgmtComponent.class,this.tenantId);
+				
+		GetEventSessionFullDetailsResponse getEventSessionFullDetailsResponse = new GetEventSessionFullDetailsResponse();
+		getEventSessionFullDetailsResponse.setErrorInfo(new ErrorInfo());						
+		List<Err> errors = getEventSessionFullDetailsResponse.getErrorInfo().getErrors();
+		String eventSessionId = getEventSessionRequest.getEventSessionId();
+			
+		try 
+		{			
+			EventSession eventSession = eventSessionsRepository.findByUserRecordIdAndEventSessionsId(eventSessionId, getEventSessionRequest.getUserRecordId());
+			
+			/*
+			 * Perform validations			
+			 *   
+			 */
+			if (eventSession == null)
+			{
+				errors.add(CommonUtils.buildErr("eventSessionId", "Event session id = "+eventSessionId+" is not found in db!"));
+				return getEventSessionFullDetailsResponse;
+			}
+			else
+				getEventSessionFullDetailsResponse.setEventSession(eventSession);
+			/*
+			 * check is its a valid scheduled event
+			 */
+			EventSchedule eventSchedule = eventScheduleMgmtComponent.getEventScheduleBySessionId(eventSessionId);
+			if (eventSchedule == null)
+				errors.add(CommonUtils.buildErr("eventSessionId", "Event schedule id = "+eventSessionId+" is not found in db!"));
+			else
+			{
+				/*
+				 * check if session has started
+				 */
+				if (!eventSchedule.getEventStatus().equals(EventStatusType.IN_PROGRESS))
+					errors.add(CommonUtils.buildErr("eventscheduleid", "Session has not started , schedule is currently = "+eventSchedule.getEventStatus().name()));			
+				/*
+				 * check if the userid is enrolled in the class
+				 */			
+				Classroom classroom = classroomDAO.getClassroomById(eventSchedule.getClassroomid());
+				if (classroom == null)
+					errors.add(CommonUtils.buildErr("classroom", "Classroom is not present for this event! Please add a schedule to a class"));
+				
+				getEventSessionFullDetailsResponse.setClassroom(classroom);
+				getEventSessionFullDetailsResponse.setEventSchedule(eventSchedule);
+								
+			}
+												
+		} 
+		catch (Exception e) 
+		{		
+			e.printStackTrace();
+			getEventSessionFullDetailsResponse.setErrorInfo(CommonUtils.buildErrorInfo(e));			
+		}		
+		
+		
+		return getEventSessionFullDetailsResponse;
+		
+		
+	}
+	
+	
 	
 	public String generateEventSessionId(String eventScheduleId, String userid)
 	{		

@@ -163,6 +163,38 @@ public class EventScheduleMgmtComponent
 	 * @param req
 	 * @return
 	 */
+	public GetEventScheduleResponse getEventScheduleBySessionId(GetEventScheduleRequest req)
+	{
+		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
+		GetEventScheduleResponse resp = new GetEventScheduleResponse();
+		try 
+		{
+			EventSchedule eventSchedule = eventScheduleDAO.getEventScheduleBySessionId(req.getEventSessionId());
+			
+			if (eventSchedule == null)
+			{	
+				resp.setMsg("Did not find any records with id = "+req.getEventSessionId());
+			}
+			else
+			{
+//				eventSchedule.getEnrolledStudents().addAll(this.enrollmentDAO.searchStudentsByEventScheduleid(req.getId()));
+				resp.setEventSchedule(eventSchedule);
+			}					
+
+		} 
+		catch (Exception e) 
+		{
+			CommonUtils.handleExceptionForResponse(resp, e);
+		}
+		return resp;
+	}
+	
+	
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 */
 	public EventSchedule getEventScheduleBySessionId(String sessionId)
 	{
 		EventScheduleDAO eventScheduleDAO = applicationContext.getBean(EventScheduleDAO.class,tenantId);	
