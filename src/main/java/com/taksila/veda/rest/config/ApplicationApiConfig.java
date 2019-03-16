@@ -4,6 +4,7 @@ import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import com.taksila.veda.classroom.ClassroomService;
 import com.taksila.veda.classroom.EnrollmentService;
@@ -24,8 +25,9 @@ import com.taksila.veda.usermgmt.UserService;
  * @version     %I%, %G%
  * @since       1.0
  */
+@Component
 @Configuration
-@ApplicationPath("api")
+@ApplicationPath("/veda/api")
 public class ApplicationApiConfig extends ResourceConfig
 {
 	public ApplicationApiConfig()

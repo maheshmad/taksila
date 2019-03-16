@@ -97,7 +97,7 @@ public class ConfigService
 					{
 						try
 						{
-							ConfigId enumConfigKey = ConfigId.valueOf(key);							
+							ConfigId enumConfigKey = ConfigId.fromValue(key);							
 							
 							Config config = new Config();
 							String v = formParams.getFirst(key); /*  we are not expecting config values to have multiple values */
