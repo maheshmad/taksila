@@ -2,14 +2,6 @@ package com.taksila.veda.classroom;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import com.taksila.veda.db.dao.ClassroomDAO;
 import com.taksila.veda.model.api.base.v1_0.Err;
 import com.taksila.veda.model.api.base.v1_0.SearchHitRecord;
@@ -27,9 +19,17 @@ import com.taksila.veda.model.api.classroom.v1_0.UpdateClassroomRequest;
 import com.taksila.veda.model.api.classroom.v1_0.UpdateClassroomResponse;
 import com.taksila.veda.utils.CommonUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 @Component
 @Scope(value="prototype")
-public class ClassroomComponent 
+public class ClassroomComponent extends Object 
 {	
 	@Autowired
 	ApplicationContext applicationContext;
