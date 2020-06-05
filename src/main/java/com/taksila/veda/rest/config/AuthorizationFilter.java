@@ -110,11 +110,11 @@ public class AuthorizationFilter implements ContainerRequestFilter
 			requestContext.setSecurityContext(sc);
 			webRequest.setAttribute("principaluser", principal);
 		}
-		
-				
+						
 		if(accessDenied) 
 		{
-			 throw new WebApplicationException(Status.FORBIDDEN); //ERROR CODE : 403
+			logger.trace("Could not get user information from the token"+jwtToken);
+			throw new WebApplicationException(Status.FORBIDDEN); //ERROR CODE : 403
 		}
 		
 	}

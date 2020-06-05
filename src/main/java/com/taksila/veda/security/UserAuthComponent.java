@@ -45,15 +45,15 @@ public class UserAuthComponent
 		this.tenantId = tenantId;		
 	}
 	
-	public UserLoginResponse getLoggedInUser(String sessionid)
+	public UserLoginResponse getLoggedInUser(String jwtToken)
 	{
 		UserSessionDAO userSessionDAO = applicationContext.getBean(UserSessionDAO.class,tenantId);	
 		UsersDAO usersDAO = applicationContext.getBean(UsersDAO.class,tenantId);	
-
+		String sessionId = jwtTokenUtil.getSessionIdFromToken(jwtToken);
 		UserLoginResponse resp = new UserLoginResponse();
 		try 
 		{
-			UserSession userSession = userSessionDAO.getValidSession(sessionid);
+			UserSession userSession = userSessionDAO.getValidSession(sessionId);
 			if (userSession != null)
 			{
 				User userInfo = usersDAO.getUserByUserId(userSession.getUserId());

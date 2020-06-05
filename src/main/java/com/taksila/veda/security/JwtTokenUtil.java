@@ -27,6 +27,7 @@ public class JwtTokenUtil implements Serializable
     static final String CLAIM_KEY_AUDIENCE = "audience";
     static final String CLAIM_KEY_CREATED = "created";
     static final String CLAIM_KEY_ROLES = "roles";
+    static final String CLAIM_KEY_SESSION_ID = "sessid";
 
     private static final String AUDIENCE_UNKNOWN = "unknown";
     private static final String AUDIENCE_WEB = "web";
@@ -86,6 +87,18 @@ public class JwtTokenUtil implements Serializable
         }
         return audience;
     }
+
+    public String getSessionIdFromToken(String token) {
+        String sessionid;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            sessionid = (String) claims.get(CLAIM_KEY_SESSION_ID);
+        } catch (Exception e) {
+            sessionid = null;
+        }
+        return sessionid;
+    }
+
 
     public List<UserRole> getRolesFromToken(String token) 
     {
@@ -153,17 +166,24 @@ public class JwtTokenUtil implements Serializable
         return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
     }
 
-    public String generateToken(UserSession userSession, JwtEndClientDevice device) {
+    public String generateToken(UserSession userSession, JwtEndClientDevice device) throws Exception {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userSession.getUserId());
         claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
+        claims.put(CLAIM_KEY_SESSION_ID, userSession.getId());
         claims.put(CLAIM_KEY_CREATED, new Date());
         String[] roles = {"ADMIN","TEACHER"};
         claims.put(CLAIM_KEY_ROLES, roles);
         return generateToken(claims);
     }
 
-    String generateToken(Map<String, Object> claims) {
+    String generateToken(Map<String, Object> claims) throws Exception
+    {
+        if (this.secret == null)
+        {           
+           throw new Exception("  MISSING JWT TOKEN SECRET  ");
+        }
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
@@ -194,7 +214,7 @@ public class JwtTokenUtil implements Serializable
     }
 
     public Boolean validateToken(String token, UserSession userSession) 
-    {     
+    {             
         final String username = getUsernameFromToken(token);        
         //final Date expiration = getExpirationDateFromToken(token);
         return (username.equals(userSession.getUserId())  && !isTokenExpired(token));

@@ -189,13 +189,13 @@ public class UserAuthService
 		if (authCookie == null)
 			asyncResp.resume(Response.status(403).type("text/plain").entity("No auth cookie found! Please make sure the cookie feature is enabled").build());
 		
-		String authSessionId = authCookie.getValue();				
+		String jwtCookie = authCookie.getValue();				
 		String tenantId = ServletUtils.getSubDomain(uri.getBaseUri());				
 		/*
 		 * get user info
 		 */
 		UserAuthComponent userAuthComponent = applicationContext.getBean(UserAuthComponent.class,tenantId);
-		UserLoginResponse userInfoResp = userAuthComponent.getLoggedInUser(authSessionId);		
+		UserLoginResponse userInfoResp = userAuthComponent.getLoggedInUser(jwtCookie);		
 		
 		if (userInfoResp.getErrorInfo() != null || userInfoResp.getSessionInfo() == null)
 		{			
